@@ -143,8 +143,13 @@ Added an `officers` content collection (`role`/`name`/`email`), 4 officer entrie
 **Verify:** `npm run build` succeeds; dev-server screenshot confirms no visible grid lines, even square spacing, 128px headshots, and the Name → Position → Email size hierarchy; right column unaffected.
 **Status:** Committed as `261e957`, pushed, `deploy.yml` ran green (build 12s, deploy 10s). Live: `/contact` (200).
 
+## [DONE] Pass 4 — Team section: centered layout, bigger profiles, muted email color
+**What:** Direct follow-up request (no re-plan needed): centered the Team column's content and heading, enlarged headshot/initials circles from 128px to 150px, and changed the email link color to match the muted position-label color.
+**Files:** `src/pages/contact.astro`
+**Status:** Committed as `c8b45ba`, pushed, `deploy.yml` ran green (deploy 8s). Live: `/contact` (200). Visual QA also revealed the user has locally filled in real officer names/emails and real social URLs (uncommitted) — flagged to the user that the name fields carry literal brackets (e.g. `"[Shlok Chatterjee]"`) left over from the placeholder convention, left untouched since it's their own in-progress data edit.
+
 ## Open Questions
-- **[NEEDS INPUT]** Real officer names/emails/photos, and the real LinkedIn/Instagram/AU Involve/GroupMe URLs — all ship as clearly-marked placeholders until provided.
+- **[NEEDS INPUT]** Real officer photos, and confirmation on the bracketed name fields (`src/content/officers/*.md`) — likely meant to be stripped before committing.
 
 ## Out of Scope
 - Sourcing or generating actual headshot photos — only the schema field + fallback UI ship now.
