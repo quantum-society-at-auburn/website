@@ -169,6 +169,11 @@ Added an `officers` content collection (`role`/`name`/`email`), 4 officer entrie
 **Files:** `src/pages/contact.astro`
 **Status:** Verified via dev-server screenshot at full scroll depth (illustration renders centered between the columns, TBD profiles scale correctly, footer/QR section unaffected) and confirmed no horizontal page overflow (`scrollWidth === clientWidth`). Committed as `14338ab`, pushed, `deploy.yml` ran green (deploy 10s). Live: `/contact` (200).
 
+## [DONE] Pass 9 — Enlarge the illustration and anchor it to the header
+**What:** Widened the Qcomputer illustration from 220px to 400px and changed `.center-visual` from vertically centered (`align-self` inherited `center`) to `align-self: start` with `margin-top: calc(-1 * (var(--space-xl) + var(--space-lg)))` — a negative margin that exactly cancels `main`'s own `padding-top` (`--space-xl`) plus `.contact-grid`'s `margin-top` (`--space-lg`), pulling the image up so its top edge sits flush against the bottom of the navy header. Confirmed via `getBoundingClientRect()` that the image's top and the header's bottom are both exactly `68px` — pixel-flush, not just visually close.
+**Files:** `src/pages/contact.astro`
+**Status:** Verified via dev-server screenshot (illustration reads as "hanging" from the header, thematically fitting since a real dilution refrigerator hangs from a top plate) and confirmed no horizontal overflow. Committed as `ea1f70f`, pushed, `deploy.yml` ran green (deploy 10s). Live: `/contact` (200).
+
 ## Open Questions
 - **[NEEDS INPUT]** VP of Outreach and VP of Programs names/emails (still `"TBD"`), officer photos, and the real Instagram profile URL (`INSTAGRAM_URL` in `contact-links.ts` is still `REPLACE_WITH_IG_HANDLE` even though `INSTAGRAM_HANDLE` was updated to the real `@auburnquantum`).
 
