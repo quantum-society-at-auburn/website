@@ -1,0 +1,19 @@
+---
+import circuitUrl from '../assets/brand/QCircuitHeaders.png?url';
+---
+<div class="circuit-divider" role="presentation" style={`--circuit-url: url(${circuitUrl})`}></div>
+
+<style>
+  .circuit-divider {
+    height: 48px;
+    background-color: var(--color-ink);
+    -webkit-mask-image: var(--circuit-url);
+    mask-image: var(--circuit-url);
+    -webkit-mask-repeat: repeat-x;
+    mask-repeat: repeat-x;
+    -webkit-mask-size: auto 100%;
+    mask-size: auto 100%;
+    -webkit-mask-position: left center;
+    mask-position: left center;
+  }
+</style>

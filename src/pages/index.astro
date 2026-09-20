@@ -2,14 +2,12 @@
 import { Image } from 'astro:assets';
 import Layout from '../layouts/Layout.astro';
 import quantumComputer from '../assets/brand/Qcomputer.png';
-import logoBadge from '../assets/brand/QSA_Logo_with_text.png';
 
 const base = import.meta.env.BASE_URL;
 ---
 <Layout title="Quantum Society at Auburn">
   <section class="hero">
     <div class="hero-text">
-      <Image src={logoBadge} alt="Quantum Society at Auburn" width={150} class="badge" />
       <h1>Quantum computing, studied together.</h1>
       <p>
         The Quantum Society at Auburn is a student group for anyone curious about
@@ -38,11 +36,6 @@ const base = import.meta.env.BASE_URL;
 
   .hero-text {
     flex: 1 1 420px;
-  }
-
-  .badge {
-    display: block;
-    margin-bottom: var(--space-lg);
   }
 
   .hero h1 {
