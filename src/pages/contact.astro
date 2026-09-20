@@ -63,14 +63,14 @@ const qrSvg = await QRCode.toString(GROUPME_URL, {
               <>
                 <div class="headshot">
                   {officer.photo ? (
-                    <Image src={officer.photo} alt={officer.name} width={96} height={96} />
+                    <Image src={officer.photo} alt={officer.name} width={128} height={128} />
                   ) : (
                     <div class="avatar-fallback">{initials(officer.name)}</div>
                   )}
                 </div>
-                <p class="role">{roleLabels[officer.role]}</p>
                 <p class="name">{officer.name}</p>
-                <a href={`mailto:${officer.email}`}>{officer.email}</a>
+                <p class="role">{roleLabels[officer.role]}</p>
+                <a class="email" href={`mailto:${officer.email}`}>{officer.email}</a>
               </>
             )}
           </div>
@@ -113,14 +113,23 @@ const qrSvg = await QRCode.toString(GROUPME_URL, {
     min-width: 0;
   }
 
-  .officers,
+  .officers {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--space-xl);
+  }
+
   .socials {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     border: 1px solid var(--color-border);
   }
 
-  .officer,
+  .officer {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
   .social {
     padding: var(--space-lg);
     border: 1px solid var(--color-border);
@@ -135,8 +144,8 @@ const qrSvg = await QRCode.toString(GROUPME_URL, {
 
   .headshot img {
     display: block;
-    width: 72px;
-    height: 72px;
+    width: 128px;
+    height: 128px;
     border-radius: 50%;
     object-fit: cover;
   }
@@ -145,14 +154,21 @@ const qrSvg = await QRCode.toString(GROUPME_URL, {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 72px;
-    height: 72px;
+    width: 128px;
+    height: 128px;
     border-radius: 50%;
     background: var(--color-text);
     color: var(--color-bg);
     font-family: var(--font-heading);
     font-weight: 600;
-    font-size: 1.125rem;
+    font-size: 1.5rem;
+  }
+
+  .officer .name {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 1.25rem;
+    margin-bottom: var(--space-xs);
   }
 
   .officer .role {
@@ -160,11 +176,8 @@ const qrSvg = await QRCode.toString(GROUPME_URL, {
     margin-bottom: var(--space-xs);
   }
 
-  .officer .name {
-    font-family: var(--font-heading);
-    font-weight: 600;
-    font-size: 1.125rem;
-    margin-bottom: var(--space-xs);
+  .officer .email {
+    font-size: 0.875rem;
   }
 
   .logo {
