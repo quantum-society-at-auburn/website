@@ -116,3 +116,30 @@ The user installed the `frontend-design` plugin (skill: `frontend-design:fronten
 - Real club content for slides/notes/notebooks/announcements — Step 10 only refreshes sample copy, not actual content.
 - Any additional pages beyond the 4 listed.
 - Generating new brand imagery — the 4 existing files in `media/` are used as-is (resized/optimized via `astro:assets`, not redrawn).
+
+---
+
+# Plan: QSA Website — Contact Page Redesign (Officer Profiles → Team/Contact Split)
+
+**Goal:** Replace the Contact page's generic Email/Discord/Instagram/Meetings block with a structured layout: 4 officer profiles (President, VP Operations, VP Outreach, VP Programs), the club logo, and AU Involve/GroupMe/social links — evolved across two passes this session.
+**Constraint source:** `CLAUDE.md` reviewed ✓.
+**Created:** 2026-09-20
+
+## [DONE] Pass 1 — Officer profiles + club links (two-column: officers left, logo/AU Involve/GroupMe+QR right)
+Added an `officers` content collection (`role`/`name`/`email`), 4 officer entries with placeholder name/email, a `src/data/contact-links.ts` constants file (`AU_INVOLVE_URL`, `GROUPME_URL`), and the `qrcode` npm package for build-time SVG QR generation. Rebuilt `src/pages/contact.astro` as a 2-column flex layout: 4 officers in a 2×2 square grid (left), logo + AU Involve link + GroupMe link/QR (right). Committed as `c324864`, deployed green, verified live (200). Full detail in the mirrored plan at `C:\Users\shlok\.claude\plans\i-want-to-build-cozy-metcalfe.md`.
+
+## [DONE] Pass 2 — "The Team" / "Contact" split, circular headshots, social link grid
+**What:** Reworked the same page per a follow-up request: left column retitled "The Team" (2×2 officer grid, each profile now has a circular headshot slot — added an optional `photo` field to the `officers` schema via Astro's `image()` content-collection helper, falls back to a navy initials circle when unset); right column retitled "Contact" with the logo enlarged (140px → 220px) and a new 2×2 square grid of social links (LinkedIn, Instagram, GroupMe, AU Involve — added `LINKEDIN_URL`/`INSTAGRAM_URL`/`INSTAGRAM_HANDLE` to `contact-links.ts`), with the GroupMe QR code kept separate, below that grid.
+**Bugs caught during visual QA (real, not hypothetical):**
+1. Two `max-width: 420px` columns with `gap: var(--space-xl)` (4rem) summed wider than `main`'s content box, wrapping to a single column instead of sitting side by side — fixed by reducing the gap to `var(--space-lg)`.
+2. Long unbroken placeholder strings (emails, URLs) in the 2×2 grid cells caused a CSS-grid "blowout": with no `min-width: 0` on the grid tracks, cell content overflowed and visually collided with the sibling column. Fixed with `grid-template-columns: minmax(0, 1fr) minmax(0, 1fr)`, `min-width: 0` on the column/cell elements, and `overflow-wrap: anywhere` on cell text.
+**Files:** `src/content.config.ts`, `src/data/contact-links.ts`, `src/pages/contact.astro`
+**Verify:** `npm run build` succeeds; dev-server screenshots confirm both squares render side by side with no overlap; `gh run watch` green; live `/contact` returns 200.
+**Status:** Committed as `d9ae9ce`, pushed, `deploy.yml` ran green (build 14s, deploy 8s). Live: `/contact` (200).
+
+## Open Questions
+- **[NEEDS INPUT]** Real officer names/emails/photos, and the real LinkedIn/Instagram/AU Involve/GroupMe URLs — all ship as clearly-marked placeholders until provided.
+
+## Out of Scope
+- Sourcing or generating actual headshot photos — only the schema field + fallback UI ship now.
+- A form-based way for officers to self-edit this data (Decap CMS still paused).
