@@ -164,6 +164,11 @@ Added an `officers` content collection (`role`/`name`/`email`), 4 officer entrie
 **Files:** `src/pages/contact.astro`, `src/styles/global.css`
 **Status:** Committed as `645dfa7`, pushed, `deploy.yml` ran green (deploy 9s). Live: `/contact` (200).
 
+## [DONE] Pass 8 — Bigger profiles, left-aligned text, quantum computer illustration
+**What:** Headshot/initials circles enlarged from 150px to 220px; the Team column's `max-width` widened from 420px to 560px so two 220px circles still fit per row; each profile's name/position/email now renders left-aligned (only the "The Team" `h1` itself stays centered — text-align:center moved from the whole `.team-column` to just its `h1`, and the `margin: 0 auto` centering was dropped from the headshot images). Added a third grid column (`grid-template-columns: 1fr auto 1fr`) holding the `Qcomputer.png` illustration (already used as the Landing hero, reused with the same alt text) centered in the gap between the Team and Contact columns.
+**Files:** `src/pages/contact.astro`
+**Status:** Verified via dev-server screenshot at full scroll depth (illustration renders centered between the columns, TBD profiles scale correctly, footer/QR section unaffected) and confirmed no horizontal page overflow (`scrollWidth === clientWidth`). Committed as `14338ab`, pushed, `deploy.yml` ran green (deploy 10s). Live: `/contact` (200).
+
 ## Open Questions
 - **[NEEDS INPUT]** VP of Outreach and VP of Programs names/emails (still `"TBD"`), officer photos, and the real Instagram profile URL (`INSTAGRAM_URL` in `contact-links.ts` is still `REPLACE_WITH_IG_HANDLE` even though `INSTAGRAM_HANDLE` was updated to the real `@auburnquantum`).
 
