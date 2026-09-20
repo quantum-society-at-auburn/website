@@ -190,6 +190,11 @@ Added an `officers` content collection (`role`/`name`/`email`), 4 officer entrie
 **Files:** `src/pages/contact.astro`
 **Status:** Verified via dev-server screenshot — each row is now a compact single-line hyperlink, no overflow. Committed as `e212b56`, pushed, `deploy.yml` ran green (deploy 8s). Live: `/contact` (200).
 
+## [DONE] Pass 13 — Rename "The Team" heading to "Leadership"
+**What:** Direct text change to the left column's `<h1>`.
+**Files:** `src/pages/contact.astro`
+**Status:** Committed as `3f6097f`, pushed, `deploy.yml` ran green (deploy 9s). Live: `/contact` (200).
+
 ## Open Questions
 - **[NEEDS INPUT]** VP of Outreach and VP of Programs names/emails (still `"TBD"`), officer photos, and the real Instagram profile URL (`INSTAGRAM_URL` in `contact-links.ts` is still `REPLACE_WITH_IG_HANDLE` even though `INSTAGRAM_HANDLE` was updated to the real `@auburnquantum`).
 
