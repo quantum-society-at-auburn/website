@@ -158,6 +158,12 @@ Added an `officers` content collection (`role`/`name`/`email`), 4 officer entrie
 **Files:** `src/pages/contact.astro`
 **Status:** Verified via dev-server screenshot — Team column centered in the left half, Contact column centered in the right half. Committed as `c3783db`, pushed, `deploy.yml` ran green (deploy 8s). Live: `/contact` (200).
 
+## [DONE] Pass 7 — Make the halves real (full-page-width breakout)
+**What:** Pass 6's centering was a no-op visually: `.contact-grid` was still confined to `main`'s 960px content box, so each "half" was only ~430px wide — barely wider than the 420px column itself, leaving no visible room to center into. Broke `.contact-grid` out to full viewport width with the standard `margin-left/right: calc(50% - 50vw)` technique so each half is a genuine half of the browser window, with `justify-items: center` now centering each column within real screen-half space.
+**Bug caught during verification:** the breakout technique introduced ~8px of horizontal page overflow (measured via `document.documentElement.scrollWidth` vs `clientWidth`) from the vw/% scrollbar-width mismatch — confirmed with `window.scrollTo` that the page could actually scroll sideways. Fixed by adding `overflow-x: hidden` to `html` in `global.css` (added to `body` first, which didn't work — the viewport scroller here is `documentElement`, not `body`); re-verified `scrollX` stays `0` after `scrollTo(500, 0)`.
+**Files:** `src/pages/contact.astro`, `src/styles/global.css`
+**Status:** Committed as `645dfa7`, pushed, `deploy.yml` ran green (deploy 9s). Live: `/contact` (200).
+
 ## Open Questions
 - **[NEEDS INPUT]** VP of Outreach and VP of Programs names/emails (still `"TBD"`), officer photos, and the real Instagram profile URL (`INSTAGRAM_URL` in `contact-links.ts` is still `REPLACE_WITH_IG_HANDLE` even though `INSTAGRAM_HANDLE` was updated to the real `@auburnquantum`).
 
