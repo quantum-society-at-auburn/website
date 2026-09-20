@@ -137,6 +137,12 @@ Added an `officers` content collection (`role`/`name`/`email`), 4 officer entrie
 **Verify:** `npm run build` succeeds; dev-server screenshots confirm both squares render side by side with no overlap; `gh run watch` green; live `/contact` returns 200.
 **Status:** Committed as `d9ae9ce`, pushed, `deploy.yml` ran green (build 14s, deploy 8s). Live: `/contact` (200).
 
+## [DONE] Pass 3 — Team section: borderless spacing, bigger headshots, name-first hierarchy
+**What:** Refinement request via the `frontend-design` skill, scoped to the left "The Team" column only (right "Contact" column untouched). Removed the hairline-bordered grid lines from `.officers` while keeping the 2×2 square arrangement, replacing the collapsed-border spacing with an even `gap: var(--space-xl)`. Enlarged headshot circles (real photo and initials-fallback) from 72px to 128px. Reordered each profile from Position → Name → Email to Name → Position → Email, with descending font sizes (name 1.25rem largest, role 1rem muted, email 0.875rem smallest) to match.
+**Files:** `src/pages/contact.astro`
+**Verify:** `npm run build` succeeds; dev-server screenshot confirms no visible grid lines, even square spacing, 128px headshots, and the Name → Position → Email size hierarchy; right column unaffected.
+**Status:** Committed as `261e957`, pushed, `deploy.yml` ran green (build 12s, deploy 10s). Live: `/contact` (200).
+
 ## Open Questions
 - **[NEEDS INPUT]** Real officer names/emails/photos, and the real LinkedIn/Instagram/AU Involve/GroupMe URLs — all ship as clearly-marked placeholders until provided.
 
