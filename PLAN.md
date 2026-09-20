@@ -148,8 +148,13 @@ Added an `officers` content collection (`role`/`name`/`email`), 4 officer entrie
 **Files:** `src/pages/contact.astro`
 **Status:** Committed as `c8b45ba`, pushed, `deploy.yml` ran green (deploy 8s). Live: `/contact` (200). Visual QA also revealed the user has locally filled in real officer names/emails and real social URLs (uncommitted) — flagged to the user that the name fields carry literal brackets (e.g. `"[Shlok Chatterjee]"`) left over from the placeholder convention, left untouched since it's their own in-progress data edit.
 
+## [DONE] Pass 5 — Fill in real officer info and club social links
+**What:** Stripped the leftover placeholder brackets from the President and VP of Operations name fields (`"[Shlok Chatterjee]"` → `"Shlok Chatterjee"`, `"[Jack Elsea]"` → `"Jack Elsea"`) and committed the user's real data: President/VP of Operations names+emails, VP of Outreach/VP of Programs marked `"TBD"`, and real AU Involve/GroupMe/LinkedIn/Instagram URLs in `contact-links.ts`.
+**Files:** `src/content/officers/*.md`, `src/data/contact-links.ts`
+**Status:** Committed as `e28ab36`, pushed, `deploy.yml` ran green (deploy 10s). Live: `/contact` (200).
+
 ## Open Questions
-- **[NEEDS INPUT]** Real officer photos, and confirmation on the bracketed name fields (`src/content/officers/*.md`) — likely meant to be stripped before committing.
+- **[NEEDS INPUT]** VP of Outreach and VP of Programs names/emails (still `"TBD"`), officer photos, and the real Instagram profile URL (`INSTAGRAM_URL` in `contact-links.ts` is still `REPLACE_WITH_IG_HANDLE` even though `INSTAGRAM_HANDLE` was updated to the real `@auburnquantum`).
 
 ## Out of Scope
 - Sourcing or generating actual headshot photos — only the schema field + fallback UI ship now.
