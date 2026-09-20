@@ -85,9 +85,4 @@ collections:
     fields:
       - { label: "Title", name: "title", widget: "string" }
       - { label: "Description", name: "description", widget: "text", required: false }
-      - label: "Form type"
-        name: "formType"
-        widget: "select"
-        options: ["formspree", "google"]
-      - { label: "Formspree form ID", name: "formId", widget: "string", required: false }
-      - { label: "Google Form URL", name: "googleFormUrl", widget: "string", required: false }
+      - { label: "Google Form URL", name: "googleFormUrl", widget: "string", hint: "Embed URL from Send > Embed <> in Google Forms" }

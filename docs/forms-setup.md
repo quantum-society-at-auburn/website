@@ -1,19 +1,13 @@
 # Forms setup (one-time, manual)
 
-Formspree's free tier is 50 submissions/month **shared across the whole account**, not per form. Signup and feedback are low-volume and fit comfortably; RSVP is recurring and can spike with weekly meetings, so it uses a Google Form instead to avoid running out of quota.
+All forms (signup, RSVP, feedback) are Google Forms, embedded directly on the site. No third-party form backend account needed — Google Forms has no submission cap that a club would realistically hit.
 
-## Signup and feedback (Formspree)
+## For each form (signup, RSVP, feedback)
 
-1. Create a free account at [formspree.io](https://formspree.io).
-2. Create two forms (e.g. "QSA Signup", "QSA Feedback"). Each gives you a form ID like `abcd1234`.
-3. Put each ID in the matching content entry's `formId` field — either directly in `src/content/forms/signup.md` / `feedback.md`, or through the Decap CMS admin panel once login is set up (see `docs/decap-oauth-setup.md`).
+1. Create a Google Form.
+2. Send → Embed `<>` → copy the embed `src` URL (looks like `https://docs.google.com/forms/d/e/.../viewform?embedded=true`).
+3. Put that URL in the matching content entry's `googleFormUrl` field — either directly in `src/content/forms/signup.md` / `rsvp.md` / `feedback.md`, or through the Decap CMS admin panel once login is set up (see `docs/decap-oauth-setup.md`).
 
-## RSVP (Google Forms)
+## Styling note
 
-1. Create a Google Form for RSVPs.
-2. Send → Embed `<>` → copy the embed `src` URL (it looks like `https://docs.google.com/forms/d/e/.../viewform?embedded=true`).
-3. Put that URL in `src/content/forms/rsvp.md`'s `googleFormUrl` field (or via Decap once login is set up).
-
-## If RSVP volume ever needs custom styling
-
-If the Google Form's look becomes a problem, revisit switching RSVP to Formspree (or a paid Formspree tier) once real attendance numbers are known.
+An embedded Google Form keeps Google's own visual styling inside the iframe — the page around it (title, description, layout) is still fully custom, but the form itself can't be restyled to match the site. If that becomes a problem later, a custom-styled form would need a real backend (Formspree, or a serverless function), which isn't set up here.

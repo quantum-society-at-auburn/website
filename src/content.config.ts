@@ -52,9 +52,7 @@ const forms = defineCollection({
   schema: z.object({
     title: z.string(),
     description: z.string().optional(),
-    formType: z.enum(['formspree', 'google']),
-    formId: z.string().optional(),
-    googleFormUrl: z.string().optional(),
+    googleFormUrl: z.string(),
   }),
 });
 
