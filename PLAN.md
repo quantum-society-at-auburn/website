@@ -185,6 +185,11 @@ Added an `officers` content collection (`role`/`name`/`email`), 4 officer entrie
 **Files:** `src/pages/contact.astro`, `src/assets/brand/AU_logo.svg` (new)
 **Status:** Verified via dev-server screenshot: 4 rows each with a small icon left of its text, no grid border lines, everything centered (heading/logo/rows/QR), QSA logo clearly the largest/most prominent element. No horizontal overflow. Committed as `5c2eba0`, pushed, `deploy.yml` ran green (deploy 11s). Live: `/contact` (200).
 
+## [DONE] Pass 12 — Drop raw URLs, clean single-line hyperlinks
+**What:** Direct request to clean up spacing: LinkedIn, GroupMe, and AU Involve rows no longer show the full pasted URL beneath the label (it was wrapping 3-4 lines each); now just the platform name renders as the link. Instagram keeps its handle (`@auburnquantum`) since it's short and meaningful, not a URL.
+**Files:** `src/pages/contact.astro`
+**Status:** Verified via dev-server screenshot — each row is now a compact single-line hyperlink, no overflow. Committed as `e212b56`, pushed, `deploy.yml` ran green (deploy 8s). Live: `/contact` (200).
+
 ## Open Questions
 - **[NEEDS INPUT]** VP of Outreach and VP of Programs names/emails (still `"TBD"`), officer photos, and the real Instagram profile URL (`INSTAGRAM_URL` in `contact-links.ts` is still `REPLACE_WITH_IG_HANDLE` even though `INSTAGRAM_HANDLE` was updated to the real `@auburnquantum`).
 
