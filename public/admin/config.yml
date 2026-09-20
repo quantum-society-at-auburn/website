@@ -1,0 +1,93 @@
+backend:
+  name: github
+  repo: quantum-society-at-auburn/website
+  branch: main
+  # base_url is intentionally omitted: it defaults to https://api.netlify.com,
+  # which is what lets Decap use Netlify's hosted OAuth provider even though
+  # this site itself is NOT hosted on Netlify (only a "shadow" Netlify site
+  # exists, solely to run the OAuth handshake). See CONTRIBUTING.md.
+  # site_domain must be set to that shadow Netlify site's domain once it
+  # exists (e.g. qsa-website-cms-auth.netlify.app) — replace the placeholder below.
+  site_domain: REPLACE_WITH_SHADOW_NETLIFY_SITE_DOMAIN
+
+media_folder: "public/uploads"
+public_folder: "/website/uploads"
+
+collections:
+  - name: "slides"
+    label: "Slides"
+    folder: "src/content/slides"
+    create: true
+    slug: "{{slug}}"
+    extension: "md"
+    format: "frontmatter"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Date", name: "date", widget: "datetime" }
+      - { label: "Presenter", name: "presenter", widget: "string" }
+      - { label: "Description", name: "description", widget: "text", required: false }
+      - { label: "Tags", name: "tags", widget: "list", default: [] }
+      - { label: "File URL", name: "fileUrl", widget: "string", hint: "Link to the slide deck (Google Drive, etc.)" }
+
+  - name: "notes"
+    label: "Notes"
+    folder: "src/content/notes"
+    create: true
+    slug: "{{slug}}"
+    extension: "md"
+    format: "frontmatter"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Date", name: "date", widget: "datetime" }
+      - { label: "Author", name: "author", widget: "string" }
+      - { label: "Description", name: "description", widget: "text", required: false }
+      - { label: "Tags", name: "tags", widget: "list", default: [] }
+      - { label: "File URL", name: "fileUrl", widget: "string", required: false, hint: "Optional link to a note file" }
+      - { label: "Body", name: "body", widget: "markdown", required: false }
+
+  - name: "notebooks"
+    label: "Notebooks"
+    folder: "src/content/notebooks"
+    create: true
+    slug: "{{slug}}"
+    extension: "md"
+    format: "frontmatter"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Date", name: "date", widget: "datetime" }
+      - { label: "Description", name: "description", widget: "text", required: false }
+      - { label: "Tags", name: "tags", widget: "list", default: [] }
+      - { label: "GitHub URL", name: "githubUrl", widget: "string", required: false }
+      - { label: "Colab URL", name: "colabUrl", widget: "string", required: false }
+
+  - name: "schedule"
+    label: "Schedule"
+    folder: "src/content/schedule"
+    create: true
+    slug: "{{slug}}"
+    extension: "md"
+    format: "frontmatter"
+    fields:
+      - { label: "Event name", name: "eventName", widget: "string" }
+      - { label: "Date", name: "date", widget: "datetime" }
+      - { label: "Time", name: "time", widget: "string" }
+      - { label: "Location", name: "location", widget: "string" }
+      - { label: "Description", name: "description", widget: "text", required: false }
+      - { label: "RSVP form slug", name: "rsvpFormSlug", widget: "string", required: false }
+
+  - name: "forms"
+    label: "Forms"
+    folder: "src/content/forms"
+    create: true
+    slug: "{{slug}}"
+    extension: "md"
+    format: "frontmatter"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Description", name: "description", widget: "text", required: false }
+      - label: "Form type"
+        name: "formType"
+        widget: "select"
+        options: ["formspree", "google"]
+      - { label: "Formspree form ID", name: "formId", widget: "string", required: false }
+      - { label: "Google Form URL", name: "googleFormUrl", widget: "string", required: false }

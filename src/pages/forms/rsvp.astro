@@ -1,0 +1,18 @@
+---
+import { getEntry } from 'astro:content';
+import FormEmbed from '../../components/FormEmbed.astro';
+
+const entry = await getEntry('forms', 'rsvp');
+if (!entry) throw new Error('Missing forms/rsvp content entry');
+---
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>{entry.data.title}</title>
+  </head>
+  <body>
+    <h1>{entry.data.title}</h1>
+    {entry.data.description && <p>{entry.data.description}</p>}
+    <FormEmbed entry={entry} />
+  </body>
+</html>

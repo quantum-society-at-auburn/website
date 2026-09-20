@@ -1,0 +1,61 @@
+import { defineCollection, z } from 'astro:content';
+import { glob } from 'astro/loaders';
+
+const base = {
+  title: z.string(),
+  date: z.coerce.date(),
+  tags: z.array(z.string()).default([]),
+  description: z.string().optional(),
+};
+
+const slides = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/slides' }),
+  schema: z.object({
+    ...base,
+    presenter: z.string(),
+    fileUrl: z.string(),
+  }),
+});
+
+const notes = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/notes' }),
+  schema: z.object({
+    ...base,
+    author: z.string(),
+    fileUrl: z.string().optional(),
+  }),
+});
+
+const notebooks = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/notebooks' }),
+  schema: z.object({
+    ...base,
+    githubUrl: z.string().optional(),
+    colabUrl: z.string().optional(),
+  }),
+});
+
+const schedule = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/schedule' }),
+  schema: z.object({
+    eventName: z.string(),
+    date: z.coerce.date(),
+    time: z.string(),
+    location: z.string(),
+    description: z.string().optional(),
+    rsvpFormSlug: z.string().optional(),
+  }),
+});
+
+const forms = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/forms' }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string().optional(),
+    formType: z.enum(['formspree', 'google']),
+    formId: z.string().optional(),
+    googleFormUrl: z.string().optional(),
+  }),
+});
+
+export const collections = { slides, notes, notebooks, schedule, forms };

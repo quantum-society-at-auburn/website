@@ -1,0 +1,39 @@
+/* Font-loading mechanism only — no real typeface chosen yet (design phase).
+   Add font files to public/fonts/ and uncomment/adjust when a typeface is picked.
+
+@font-face {
+  font-family: "Body";
+  src: url("/website/fonts/body.woff2") format("woff2");
+  font-display: swap;
+}
+*/
+
+:root {
+  /* Color tokens — placeholders. Real palette comes in the design phase. */
+  --color-bg: #ffffff;
+  --color-text: #111111;
+  --color-accent: #111111;
+  --color-border: #dddddd;
+
+  /* Spacing tokens */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 2rem;
+  --space-xl: 4rem;
+
+  /* Font tokens — placeholders, real typefaces come in the design phase */
+  --font-body: system-ui, sans-serif;
+  --font-heading: system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+}
