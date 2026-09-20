@@ -174,6 +174,11 @@ Added an `officers` content collection (`role`/`name`/`email`), 4 officer entrie
 **Files:** `src/pages/contact.astro`
 **Status:** Verified via dev-server screenshot (illustration reads as "hanging" from the header, thematically fitting since a real dilution refrigerator hangs from a top plate) and confirmed no horizontal overflow. Committed as `ea1f70f`, pushed, `deploy.yml` ran green (deploy 10s). Live: `/contact` (200).
 
+## [DONE] Pass 10 — Remove the quantum computer illustration
+**What:** Direct revert per user request: dropped the `quantumComputer` import, the `.center-visual` markup and its CSS (from Passes 8–9), and restored `.contact-grid`'s `grid-template-columns` from `1fr auto 1fr` back to `1fr 1fr`. Back to a plain two-column Team/Contact layout.
+**Files:** `src/pages/contact.astro`
+**Status:** Verified via dev-server screenshot — no illustration, no leftover gap. Committed as `976972a`, pushed, `deploy.yml` ran green (deploy 8s). Live: `/contact` (200).
+
 ## Open Questions
 - **[NEEDS INPUT]** VP of Outreach and VP of Programs names/emails (still `"TBD"`), officer photos, and the real Instagram profile URL (`INSTAGRAM_URL` in `contact-links.ts` is still `REPLACE_WITH_IG_HANDLE` even though `INSTAGRAM_HANDLE` was updated to the real `@auburnquantum`).
 
