@@ -179,6 +179,12 @@ Added an `officers` content collection (`role`/`name`/`email`), 4 officer entrie
 **Files:** `src/pages/contact.astro`
 **Status:** Verified via dev-server screenshot — no illustration, no leftover gap. Committed as `976972a`, pushed, `deploy.yml` ran green (deploy 8s). Live: `/contact` (200).
 
+## [DONE] Pass 11 — Contact column: fully centered, gridless icon-left links
+**Goal:** Center everything in the "Contact" column (heading, logo, social links, QR), remove the bordered social grid (keep the 2×2 arrangement, drop the visible lines — same technique as the Team side's Pass 1), and give each of the 4 social links a small icon to the left of its text while keeping the QSA logo as the column's large, clear centerpiece.
+**Decisions locked in (from AskUserQuestion, then revised per follow-up):** Center everything, not just the heading. All 4 links get icons. **[REVISED]** Icons are small and sit left-of-text (not large circle badges), and the QSA logo stays the dominant visual element above them. **[REVISED]** AU Involve uses a **real downloaded Auburn University logo** (Wikimedia Commons "Auburn Tigers logo.svg" — public-domain textmark) instead of a text monogram, per explicit user request. LinkedIn/Instagram/GroupMe use small hand-authored inline SVG line icons. Layout stays a 2×2 grid of rows. Instagram already showed only the handle — unchanged.
+**Files:** `src/pages/contact.astro`, `src/assets/brand/AU_logo.svg` (new)
+**Status:** Verified via dev-server screenshot: 4 rows each with a small icon left of its text, no grid border lines, everything centered (heading/logo/rows/QR), QSA logo clearly the largest/most prominent element. No horizontal overflow. Committed as `5c2eba0`, pushed, `deploy.yml` ran green (deploy 11s). Live: `/contact` (200).
+
 ## Open Questions
 - **[NEEDS INPUT]** VP of Outreach and VP of Programs names/emails (still `"TBD"`), officer photos, and the real Instagram profile URL (`INSTAGRAM_URL` in `contact-links.ts` is still `REPLACE_WITH_IG_HANDLE` even though `INSTAGRAM_HANDLE` was updated to the real `@auburnquantum`).
 
