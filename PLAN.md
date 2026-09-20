@@ -34,18 +34,18 @@ The user installed the `frontend-design` plugin (skill: `frontend-design:fronten
 
 ---
 
-## Step 1: Remove the throwaway collections-test page
+## [DONE] Step 1: Remove the throwaway collections-test page
 **What:** Delete `src/pages/collections-test.astro`.
 **Why:** It was only scaffolding-phase verification; the real pages built in this plan supersede it.
 **Verify:** `npm run build` still succeeds with one fewer route.
 
-## Step 2: Bring the real brand assets into the project
+## [DONE] Step 2: Bring the real brand assets into the project
 **What:** `git mv` the 4 files from repo-root `media/` into `src/assets/brand/`, then remove the now-empty `media/` folder.
 **Why:** `media/` at repo root is outside both `public/` and `src/`, so Astro doesn't serve or process it at all. `src/assets/` (not `public/`) is chosen so the logo/hero art go through Astro's `astro:assets` image pipeline — automatic resizing/WebP output — instead of shipping raw multi-hundred-KB PNGs verbatim.
 **Files:** `media/*.png` → `src/assets/brand/*.png`
 **Verify:** Files exist under `src/assets/brand/`; `media/` no longer exists; `npm run build` still succeeds.
 
-## Step 3: Run the frontend-design two-pass design-plan process
+## [DONE] Step 3: Run the frontend-design two-pass design-plan process — final token system recorded as a comment block at the top of `src/styles/global.css`
 **What:** Following the loaded `frontend-design` skill's required process, before writing any page code:
 1. **State the brief explicitly:** subject = a student quantum-computing/physics club at Auburn University; audience = current + prospective members (students); job-to-be-done = find slides/notes/notebooks/announcements and contact info fast, presented with real technical/academic character rather than generic club-site polish.
 2. **Brainstorm a token system**, grounded in the sampled logo colors, as a concrete proposal:
@@ -58,49 +58,52 @@ The user installed the `frontend-design` plugin (skill: `frontend-design:fronten
 **Files:** none (planning artifact; can be jotted as a comment block at the top of `src/styles/global.css` for traceability)
 **Verify:** A finalized token system (final hexes, named type roles with real typeface names, one-line layout concepts + wireframes for all 4 pages) exists and has been explicitly checked against the tell list before Step 4 begins.
 
-## Step 4: Implement the finalized tokens
+## [DONE, REVISED] Step 4: Implement the finalized tokens — link color darkened from the planned Ember #C96A12 to #A6550D after a contrast script showed #C96A12 measured 3.47:1 on Paper (fails WCAG AA 4.5:1); #A6550D measures 4.90:1
 **What:** Replace the placeholder tokens in `src/styles/global.css` with the token system finalized in Step 3; self-host the chosen typefaces into `public/fonts/`.
 **Files:** `src/styles/global.css`, `public/fonts/*.woff2`
 **Verify:** `npm run build` succeeds.
 
-## Step 5: Build the shared Nav + Footer with the real logo, and wire into `Layout.astro`
+## [DONE] Step 5: Build the shared Nav + Footer with the real logo, and wire into `Layout.astro`
 **What:** Add `src/components/Nav.astro` (using `Q_blank.png` or the full logo via `astro:assets`' `<Image>` as the mark, links to the 4 pages, current page indicated structurally — not via a generic active-underline default) and `src/components/Footer.astro` (contact placeholder + copyright), both rendered from `src/layouts/Layout.astro`. Regenerate `public/favicon.svg`/`.ico` from `Q_blank.png` (replacing Astro's default placeholder favicon still in place from scaffolding).
 **Files:** `src/components/Nav.astro`, `src/components/Footer.astro`, `src/layouts/Layout.astro`, `public/favicon.svg`, `public/favicon.ico`
 **Verify:** Any page using `Layout` shows the real logo in nav and the real favicon in the browser tab; nav links resolve under the `/website/` base path.
 
-## Step 6: Build the Landing page
+## [DONE] Step 6: Build the Landing page
 **What:** Replace the placeholder `src/pages/index.astro` with a real landing page whose hero uses `Qcomputer.png` as the characteristic opening visual (per the skill's hero guidance), a short club intro grounded in the actual subject (quantum computing/physics, Auburn), and links into Resources, Announcements, and Contact.
 **Files:** `src/pages/index.astro`
 **Verify:** Page renders through `Layout`, hero visual displays correctly, links navigate to the other 3 pages.
 
-## Step 7: Build the Announcements page
+## [DONE] Step 7: Build the Announcements page
 **What:** Add `src/pages/announcements.astro` reading `getCollection('schedule')`, sorted by `date`, listing `eventName`/`date`/`time`/`location`/`description`.
 **Files:** `src/pages/announcements.astro`
 **Verify:** Page lists the existing `test-event` schedule entry, correctly sorted/formatted.
 
-## Step 8: Build the Resources page
+## [DONE] Step 8: Build the Resources page
 **What:** Add `src/pages/resources.astro` merging `getCollection('slides')`, `getCollection('notes')`, `getCollection('notebooks')` into one list, each item tagged with its type, with a small inline (no-framework) JS filter by type and tag.
 **Files:** `src/pages/resources.astro`
 **Verify:** Page lists all 3 existing test entries with working type/tag filtering; no framework dependency added to `package.json`.
 
-## Step 9: Build the Contact page
+## [DONE] Step 9: Build the Contact page
 **What:** Add `src/pages/contact.astro` with static club contact info (email, socials/Discord, meeting time/location), using clearly-marked placeholders until real values are supplied.
 **Files:** `src/pages/contact.astro`
 **Verify:** Page renders through `Layout`; placeholders are visibly marked as such, not presented as real info.
 
-## Step 10: Refresh placeholder content with realistic sample copy
+## [DONE] Step 10: Refresh placeholder content with realistic sample copy
 **What:** Update the existing test entries in `src/content/{slides,notes,notebooks,schedule}/` with more realistic-sounding (but still clearly sample) titles/descriptions, grounded in the actual subject matter (quantum computing topics), so Step 11's visual QA judges real-looking content density.
 **Files:** `src/content/slides/test-slide.md`, `src/content/notes/test-note.md`, `src/content/notebooks/test-notebook.md`, `src/content/schedule/test-event.md`
 **Verify:** `npm run build` succeeds; Resources/Announcements pages show the refreshed sample copy.
 
-## Step 11: Visual QA / self-critique pass with a real browser
+## [DONE, PARTIAL] Step 11: Visual QA / self-critique pass with a real browser
 **What:** Start the dev server with `astro dev --background` (per `CLAUDE.md`), then use `claude-in-chrome` to screenshot all 4 pages at a desktop and a mobile width. Critique against: (a) the Step 3 design plan — does it match what was proposed; (b) the skill's tell list again, now that it's rendered, not just planned; (c) the skill's restraint guidance — "spend your boldness in one place... remove one accessory." Adjust and re-screenshot until it holds up. Stop the server with `astro dev stop` when done.
 **Files:** whichever of the above need adjustment based on what's actually seen.
 **Verify:** Screenshots of all 4 pages at both widths look intentional and consistent, use the real logo/hero assets correctly, and don't match the skill's documented generic-tell patterns; no layout overflow/breakage at mobile width.
+**Status:** Desktop screenshots (1568px) of all 4 pages confirmed against the tell list — passes (navy/orange/paper palette clearly distinct from the flagged cream+serif+terracotta and near-black+neon combos, divided-list rows not SaaS cards, no ALL-CAPS eyebrows/em-dash labels/arrow-suffixed links, contrast-checked CTA/links). Caught and fixed a real off-by-one date bug (UTC-parsed dates formatted in local timezone showed one day early) by adding `timeZone: 'UTC'` to both date formatters. Resources filter interaction confirmed working (click-tested).
+**Known gap:** `resize_window` did not actually narrow the render viewport in this sandbox (screenshots stayed ~1568px wide regardless of requested size, tried twice on two different tabs) — true mobile screenshots could not be captured. Mobile-safety was instead verified by CSS/layout audit: found and fixed a real overflow risk (4 nav links at `gap: 2rem` with no wrap would exceed a ~326px available width on a 390px phone) by adding `flex-wrap: wrap` and a reduced-gap media query to `Nav.astro`. All other layouts (hero, resource/announcement rows, contact) use flexible/wrapping CSS with no fixed widths large enough to overflow. This is a lower-confidence check than an actual screenshot — worth a real device/DevTools check later if mobile issues are reported.
 
-## Step 12: Build, commit, push, and verify the live deploy
+## [DONE] Step 12: Build, commit, push, and verify the live deploy
 **What:** `npm run build` one final time, commit, push to `main`, watch the existing `deploy.yml` workflow (`gh run watch`), then `curl` the live URLs for all 4 pages to confirm 200s.
 **Verify:** `gh run watch` shows both jobs green; all 4 live page URLs under `https://quantum-society-at-auburn.github.io/website/` return 200.
+**Status:** Committed as `ccb042f`, pushed, `deploy.yml` ran green (build 16s, deploy 8s). All 4 pages confirmed live: `/` (200), `/resources` (200), `/announcements` (200), `/contact` (200).
 
 ---
 
