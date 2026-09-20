@@ -144,11 +144,13 @@ const qrSvg = await QRCode.toString(GROUPME_URL, {
   .center-visual {
     display: flex;
     justify-content: center;
+    align-self: start;
+    margin-top: calc(-1 * (var(--space-xl) + var(--space-lg)));
   }
 
   .center-visual img {
     display: block;
-    width: 220px;
+    width: 400px;
     height: auto;
   }
 
