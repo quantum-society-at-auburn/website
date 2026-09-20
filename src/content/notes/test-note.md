@@ -1,9 +1,9 @@
 ---
-title: "Test Note"
-date: 2026-09-20
-tags: ["test"]
-author: "Test Author"
-description: "Placeholder entry to verify the notes collection."
+title: "Notes: Entanglement and Bell States"
+date: 2026-09-03
+tags: ["entanglement", "fundamentals"]
+author: "Sample Author"
+description: "Sample entry — write-up from our session on entangled states and Bell inequalities."
 ---
 
-Placeholder body content.
+Sample body content — this is placeholder text for a real session write-up.

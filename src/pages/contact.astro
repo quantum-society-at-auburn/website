@@ -1,0 +1,39 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+<Layout title="Contact — Quantum Society at Auburn">
+  <h1>Contact</h1>
+  <p>Questions about joining, upcoming sessions, or anything else — reach out.</p>
+
+  <dl class="info">
+    <dt>Email</dt>
+    <dd><a href="mailto:REPLACE_WITH_CLUB_EMAIL">[REPLACE: club email]</a></dd>
+
+    <dt>Discord</dt>
+    <dd><a href="#">[REPLACE: Discord invite link]</a></dd>
+
+    <dt>Instagram</dt>
+    <dd><a href="#">[REPLACE: Instagram handle]</a></dd>
+
+    <dt>Meetings</dt>
+    <dd>[REPLACE: weekly meeting time and location]</dd>
+  </dl>
+</Layout>
+
+<style>
+  .info {
+    margin-top: var(--space-lg);
+    max-width: var(--measure);
+  }
+
+  .info dt {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    color: var(--color-muted);
+    margin-top: var(--space-md);
+  }
+
+  .info dd {
+    margin: var(--space-xs) 0 0;
+  }
+</style>

@@ -1,0 +1,65 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+
+const events = (await getCollection('schedule')).sort(
+  (a, b) => a.data.date.valueOf() - b.data.date.valueOf()
+);
+
+const dateFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
+---
+<Layout title="Announcements — Quantum Society at Auburn">
+  <h1>Announcements</h1>
+  <p>Upcoming meetings and events.</p>
+
+  <ul class="schedule">
+    {events.map((event) => (
+      <li class="row">
+        <span class="date">{dateFormatter.format(event.data.date)}</span>
+        <div class="details">
+          <h2>{event.data.eventName}</h2>
+          <p class="meta">{event.data.time} &middot; {event.data.location}</p>
+          {event.data.description && <p>{event.data.description}</p>}
+        </div>
+      </li>
+    ))}
+  </ul>
+
+  {events.length === 0 && <p>No announcements yet — check back soon.</p>}
+</Layout>
+
+<style>
+  .schedule {
+    list-style: none;
+    margin: var(--space-lg) 0 0;
+    padding: 0;
+  }
+
+  .row {
+    display: flex;
+    gap: var(--space-lg);
+    padding: var(--space-lg) 0;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .row:last-child {
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .date {
+    flex: 0 0 5rem;
+    font-family: var(--font-heading);
+    font-weight: 600;
+    color: var(--color-muted);
+  }
+
+  .details h2 {
+    font-size: 1.25rem;
+    margin-bottom: var(--space-xs);
+  }
+
+  .meta {
+    color: var(--color-muted);
+    margin-bottom: var(--space-xs);
+  }
+</style>

@@ -1,0 +1,115 @@
+# Plan: QSA Website — Design & Build the 4 Core Pages (using real brand assets)
+
+**Goal:** A sleek, deliberately non-templated Astro site with 4 working pages — Landing, Resources, Announcements, Contact — sharing one nav/footer shell, built around the club's real logo/brand assets and a rigorous anti-generic design process, not guessed colors.
+**Constraint source:** `CLAUDE.md` reviewed ✓ — dev server must be run via `astro dev --background` (managed with `astro dev status` / `astro dev logs` / `astro dev stop`).
+**Prior plan:** Replaces the first draft of this same design/build plan (written earlier this session at this path) — reworked in place after the `frontend-design` skill was installed and real brand assets were found in `media/`. The earlier environment-setup plan is tracked separately at `C:\Users\shlok\.claude\plans\i-want-to-build-cozy-metcalfe.md` (now also holding a copy of this plan) and is **[DONE]**. Decap CMS's remaining manual OAuth setup is explicitly **paused** per the user — out of scope here.
+**Created:** 2026-09-20 · **Reworked:** 2026-09-20 (new `frontend-design` skill installed; real brand assets found in `media/`)
+
+**Decisions locked in (do not revisit):**
+- 4 pages: Landing, Resources, Announcements, Contact.
+- Announcements reuses the existing `schedule` content collection (no new collection).
+- Resources is one combined, filterable list across the existing `slides` / `notes` / `notebooks` collections (filterable by type and/or tag).
+- Contact is static info only — no form.
+- **Real brand assets exist at repo root `media/`** (4 PNGs) and must be used, not replaced with generic placeholders:
+  - `QSA_Logo_with_text.png` — full logo, navy circle + orange "Q"-globe-arrow mark + wordmark
+  - `Q_blank.png` — the orange mark alone, transparent background (favicon/compact-nav candidate)
+  - `Q_bg.png` — mark on navy circle, no text
+  - `Qcomputer.png` — stylized quantum-computer illustration, orange/brown on transparent background (hero-visual candidate)
+- **Real palette sampled directly from the logo's pixels** (not guessed): Ink Navy `#1F1D3D`, Signal Orange `#FF8000`, White `#FFFFFF`. This supersedes the placeholder indigo/off-white palette from the earlier environment-setup pass.
+
+## Skills/plugins/agents for this phase (reworked with what's newly installed)
+
+The user installed the `frontend-design` plugin (skill: `frontend-design:frontend-design`) and added the `superpowers-marketplace` marketplace (no plugin from it installed yet — nothing to act on there). Checked `ListAgents`: no new dedicated design *agent* was added, just the skill.
+
+| Tool | Verdict | Why |
+|---|---|---|
+| `frontend-design:frontend-design` | **Use — now the primary design methodology for this phase** | Newly installed, directly fills the gap flagged in the prior plan ("no dedicated design skill exists"). Its process (loaded and summarized in Step 3 below): state subject/audience/job → brainstorm a named color/type/layout/principles token system → **self-critique that plan against its own documented list of "AI-generated design tells"** (warm-cream-#F4F1EA+serif+terracotta; near-black+neon accent; SaaS identical-rounded-card kit with the same soft grey shadow; ALL-CAPS tracked eyebrows; em-dash labels; '→' on every link/button; ambient scroll-triggered motion) → only then build → screenshot-critique. This plan follows that process rather than skipping straight to code. |
+| `claude-in-chrome` | **Use — now required, not optional** | The skill explicitly calls for screenshot-based self-critique ("a picture is worth 1000 tokens") — this is how that happens. |
+| `run` skill / `astro dev --background` | Use | Per `CLAUDE.md`'s own convention for local preview. |
+| WebSearch | Use, lightly, if at all | Mostly superseded now — real brand assets ground the palette/subject directly, so there's less need to research reference sites for inspiration. |
+| `code-review` | Use before final push | Unchanged from before. |
+| `dataviz` | Skip | No charts on any of the 4 pages. |
+| `design-mirror` (Bright Data) | **Skip, more firmly than before** | We now have real brand assets to ground the design in — no reason to mirror an external site's look at all. |
+| `small-business:canva-creator` / `brand-style` | Skip | A real logo already exists; no brand-asset generation needed. |
+
+---
+
+## Step 1: Remove the throwaway collections-test page
+**What:** Delete `src/pages/collections-test.astro`.
+**Why:** It was only scaffolding-phase verification; the real pages built in this plan supersede it.
+**Verify:** `npm run build` still succeeds with one fewer route.
+
+## Step 2: Bring the real brand assets into the project
+**What:** `git mv` the 4 files from repo-root `media/` into `src/assets/brand/`, then remove the now-empty `media/` folder.
+**Why:** `media/` at repo root is outside both `public/` and `src/`, so Astro doesn't serve or process it at all. `src/assets/` (not `public/`) is chosen so the logo/hero art go through Astro's `astro:assets` image pipeline — automatic resizing/WebP output — instead of shipping raw multi-hundred-KB PNGs verbatim.
+**Files:** `media/*.png` → `src/assets/brand/*.png`
+**Verify:** Files exist under `src/assets/brand/`; `media/` no longer exists; `npm run build` still succeeds.
+
+## Step 3: Run the frontend-design two-pass design-plan process
+**What:** Following the loaded `frontend-design` skill's required process, before writing any page code:
+1. **State the brief explicitly:** subject = a student quantum-computing/physics club at Auburn University; audience = current + prospective members (students); job-to-be-done = find slides/notes/notebooks/announcements and contact info fast, presented with real technical/academic character rather than generic club-site polish.
+2. **Brainstorm a token system**, grounded in the sampled logo colors, as a concrete proposal:
+   - *Color* (named, 4–6 hexes): Ink Navy `#1F1D3D` (headings, nav/footer band, primary text), Signal Orange `#FF8000` (links, CTAs, active states), Paper `#F4F5F7` (main background — a cool light neutral, deliberately **not** the skill's flagged warm-cream `#F4F1EA` "AI-tell"), Slate `#5A5E72` (secondary/muted text), Hairline `#DDE1E8` (borders/dividers), Ember `#C96A12` (darker orange for hover/pressed states, contrast-checked against Paper).
+   - *Type*: two roles (headline, body/UI) — **specific typeface names deferred to this step's own execution**, chosen only after checking 2–3 candidate pairings against the skill's tell list (reject anything landing on Inter/Poppins/Space Grotesk-by-default, or the flagged cream-serif-terracotta combo). Directional hint only: something with real technical/academic character that echoes the logo's own slab-serif wordmark, not a generic SaaS grotesque.
+   - *Layout*: one-sentence concept + ASCII wireframe per page (Landing, Resources, Announcements, Contact) — produced in this step, not guessed in advance here.
+   - *Principles*: 2–3 sentences on what makes this specific page unique (e.g., leaning into the literal quantum-computer illustration as the landing hero, per the skill's "open with the most characteristic thing in the subject's world" guidance — not a generic hero-text-plus-gradient treatment).
+3. **Self-critique line-by-line** against the skill's explicit tell list (cream+serif+terracotta; near-black+neon; SaaS identical-rounded-card kit with uniform soft-grey shadow; ALL-CAPS eyebrows; em-dash labels; monospace micro-labels; '→' appended to links; scattered fade-slide-up-per-section motion) and revise anything that matches by default rather than by deliberate choice for this brief.
+**Why:** This is the skill's own mandated process — "only after you've confirmed the relative uniqueness of your design plan should you start to write the code" — not an optional nicety.
+**Files:** none (planning artifact; can be jotted as a comment block at the top of `src/styles/global.css` for traceability)
+**Verify:** A finalized token system (final hexes, named type roles with real typeface names, one-line layout concepts + wireframes for all 4 pages) exists and has been explicitly checked against the tell list before Step 4 begins.
+
+## Step 4: Implement the finalized tokens
+**What:** Replace the placeholder tokens in `src/styles/global.css` with the token system finalized in Step 3; self-host the chosen typefaces into `public/fonts/`.
+**Files:** `src/styles/global.css`, `public/fonts/*.woff2`
+**Verify:** `npm run build` succeeds.
+
+## Step 5: Build the shared Nav + Footer with the real logo, and wire into `Layout.astro`
+**What:** Add `src/components/Nav.astro` (using `Q_blank.png` or the full logo via `astro:assets`' `<Image>` as the mark, links to the 4 pages, current page indicated structurally — not via a generic active-underline default) and `src/components/Footer.astro` (contact placeholder + copyright), both rendered from `src/layouts/Layout.astro`. Regenerate `public/favicon.svg`/`.ico` from `Q_blank.png` (replacing Astro's default placeholder favicon still in place from scaffolding).
+**Files:** `src/components/Nav.astro`, `src/components/Footer.astro`, `src/layouts/Layout.astro`, `public/favicon.svg`, `public/favicon.ico`
+**Verify:** Any page using `Layout` shows the real logo in nav and the real favicon in the browser tab; nav links resolve under the `/website/` base path.
+
+## Step 6: Build the Landing page
+**What:** Replace the placeholder `src/pages/index.astro` with a real landing page whose hero uses `Qcomputer.png` as the characteristic opening visual (per the skill's hero guidance), a short club intro grounded in the actual subject (quantum computing/physics, Auburn), and links into Resources, Announcements, and Contact.
+**Files:** `src/pages/index.astro`
+**Verify:** Page renders through `Layout`, hero visual displays correctly, links navigate to the other 3 pages.
+
+## Step 7: Build the Announcements page
+**What:** Add `src/pages/announcements.astro` reading `getCollection('schedule')`, sorted by `date`, listing `eventName`/`date`/`time`/`location`/`description`.
+**Files:** `src/pages/announcements.astro`
+**Verify:** Page lists the existing `test-event` schedule entry, correctly sorted/formatted.
+
+## Step 8: Build the Resources page
+**What:** Add `src/pages/resources.astro` merging `getCollection('slides')`, `getCollection('notes')`, `getCollection('notebooks')` into one list, each item tagged with its type, with a small inline (no-framework) JS filter by type and tag.
+**Files:** `src/pages/resources.astro`
+**Verify:** Page lists all 3 existing test entries with working type/tag filtering; no framework dependency added to `package.json`.
+
+## Step 9: Build the Contact page
+**What:** Add `src/pages/contact.astro` with static club contact info (email, socials/Discord, meeting time/location), using clearly-marked placeholders until real values are supplied.
+**Files:** `src/pages/contact.astro`
+**Verify:** Page renders through `Layout`; placeholders are visibly marked as such, not presented as real info.
+
+## Step 10: Refresh placeholder content with realistic sample copy
+**What:** Update the existing test entries in `src/content/{slides,notes,notebooks,schedule}/` with more realistic-sounding (but still clearly sample) titles/descriptions, grounded in the actual subject matter (quantum computing topics), so Step 11's visual QA judges real-looking content density.
+**Files:** `src/content/slides/test-slide.md`, `src/content/notes/test-note.md`, `src/content/notebooks/test-notebook.md`, `src/content/schedule/test-event.md`
+**Verify:** `npm run build` succeeds; Resources/Announcements pages show the refreshed sample copy.
+
+## Step 11: Visual QA / self-critique pass with a real browser
+**What:** Start the dev server with `astro dev --background` (per `CLAUDE.md`), then use `claude-in-chrome` to screenshot all 4 pages at a desktop and a mobile width. Critique against: (a) the Step 3 design plan — does it match what was proposed; (b) the skill's tell list again, now that it's rendered, not just planned; (c) the skill's restraint guidance — "spend your boldness in one place... remove one accessory." Adjust and re-screenshot until it holds up. Stop the server with `astro dev stop` when done.
+**Files:** whichever of the above need adjustment based on what's actually seen.
+**Verify:** Screenshots of all 4 pages at both widths look intentional and consistent, use the real logo/hero assets correctly, and don't match the skill's documented generic-tell patterns; no layout overflow/breakage at mobile width.
+
+## Step 12: Build, commit, push, and verify the live deploy
+**What:** `npm run build` one final time, commit, push to `main`, watch the existing `deploy.yml` workflow (`gh run watch`), then `curl` the live URLs for all 4 pages to confirm 200s.
+**Verify:** `gh run watch` shows both jobs green; all 4 live page URLs under `https://quantum-society-at-auburn.github.io/website/` return 200.
+
+---
+
+## Open Questions
+- **[NEEDS INPUT]** Real contact info for the Contact page (club email, Discord/Instagram/other social links, general meeting time/location) — Step 9 ships with clearly-marked placeholders until this is provided.
+- **[DECIDED DURING BUILD, not now]** Exact typeface names — deliberately deferred to Step 3's own brainstorm-and-critique process rather than picked in this planning pass, per the skill's methodology.
+
+## Out of Scope
+- Decap CMS OAuth setup (`docs/decap-oauth-setup.md`) — explicitly paused this session.
+- Real club content for slides/notes/notebooks/announcements — Step 10 only refreshes sample copy, not actual content.
+- Any additional pages beyond the 4 listed.
+- Generating new brand imagery — the 4 existing files in `media/` are used as-is (resized/optimized via `astro:assets`, not redrawn).

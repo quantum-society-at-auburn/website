@@ -1,7 +1,7 @@
 ---
-eventName: "Test Meeting"
-date: 2026-09-20
+eventName: "Weekly Meeting: Quantum Error Correction"
+date: 2026-09-24
 time: "6:00 PM"
-location: "Test Room"
-description: "Placeholder entry to verify the schedule collection."
+location: "Sample Room, Auburn University"
+description: "Sample entry — an intro to error correction and why qubits need it."
 ---

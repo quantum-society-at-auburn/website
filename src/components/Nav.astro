@@ -1,0 +1,101 @@
+---
+import { Image } from 'astro:assets';
+import qMark from '../assets/brand/Q_blank.png';
+
+const base = import.meta.env.BASE_URL;
+const path = Astro.url.pathname;
+
+const links = [
+  { href: base, label: 'Home' },
+  { href: `${base}resources`, label: 'Resources' },
+  { href: `${base}announcements`, label: 'Announcements' },
+  { href: `${base}contact`, label: 'Contact' },
+];
+
+function isActive(href: string) {
+  if (href === base) return path === base || path === base.slice(0, -1);
+  return path.startsWith(href);
+}
+---
+<header class="nav">
+  <a class="wordmark" href={base}>
+    <Image src={qMark} alt="" width={32} height={36} />
+    <span>Quantum Society at Auburn</span>
+  </a>
+  <nav aria-label="Primary">
+    <ul>
+      {links.map((link) => (
+        <li>
+          <a href={link.href} aria-current={isActive(link.href) ? 'page' : undefined}>
+            {link.label}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+</header>
+
+<style>
+  .nav {
+    background: var(--color-ink);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-md) var(--space-lg);
+    flex-wrap: wrap;
+    gap: var(--space-md);
+  }
+
+  .wordmark {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    color: #fff;
+    text-decoration: none;
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 1.1rem;
+  }
+
+  .wordmark:hover {
+    color: #fff;
+  }
+
+  nav ul {
+    list-style: none;
+    display: flex;
+    gap: var(--space-lg);
+    margin: 0;
+    padding: 0;
+    flex-wrap: wrap;
+  }
+
+  @media (max-width: 640px) {
+    nav ul {
+      gap: var(--space-md);
+    }
+  }
+
+  nav a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 500;
+    padding-bottom: 2px;
+    border-bottom: 2px solid transparent;
+  }
+
+  nav a:hover {
+    border-bottom-color: var(--color-accent);
+  }
+
+  nav a[aria-current='page'] {
+    border-bottom-color: var(--color-accent);
+  }
+
+  @media (max-width: 640px) {
+    .wordmark span {
+      display: none;
+    }
+  }
+</style>
