@@ -4,7 +4,6 @@ import { Image } from 'astro:assets';
 import QRCode from 'qrcode';
 import Layout from '../layouts/Layout.astro';
 import logo from '../assets/brand/QSA_Logo_with_text.png';
-import quantumComputer from '../assets/brand/Qcomputer.png';
 import {
   AU_INVOLVE_URL,
   GROUPME_URL,
@@ -79,14 +78,6 @@ const qrSvg = await QRCode.toString(GROUPME_URL, {
       </div>
     </div>
 
-    <div class="center-visual">
-      <Image
-        src={quantumComputer}
-        alt="Illustration of a dilution refrigerator used in quantum computing"
-        width={220}
-      />
-    </div>
-
     <div class="column">
       <h1>Contact</h1>
       <Image src={logo} alt="Quantum Society at Auburn" width={220} class="logo" />
@@ -111,8 +102,7 @@ const qrSvg = await QRCode.toString(GROUPME_URL, {
 <style>
   .contact-grid {
     display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    align-items: center;
+    grid-template-columns: 1fr 1fr;
     justify-items: center;
     gap: var(--space-lg);
     margin-top: var(--space-lg);
@@ -139,19 +129,6 @@ const qrSvg = await QRCode.toString(GROUPME_URL, {
 
   .team-column h1 {
     text-align: center;
-  }
-
-  .center-visual {
-    display: flex;
-    justify-content: center;
-    align-self: start;
-    margin-top: calc(-1 * (var(--space-xl) + var(--space-lg)));
-  }
-
-  .center-visual img {
-    display: block;
-    width: 400px;
-    height: auto;
   }
 
   .officers {
