@@ -54,7 +54,7 @@ const qrSvg = await QRCode.toString(GROUPME_URL, {
 ---
 <Layout title="Contact — Quantum Society at Auburn">
   <div class="contact-grid">
-    <div class="column">
+    <div class="column team-column">
       <h1>The Team</h1>
       <div class="officers">
         {corners.map((officer) => (
@@ -113,6 +113,10 @@ const qrSvg = await QRCode.toString(GROUPME_URL, {
     min-width: 0;
   }
 
+  .team-column {
+    text-align: center;
+  }
+
   .officers {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
@@ -144,8 +148,9 @@ const qrSvg = await QRCode.toString(GROUPME_URL, {
 
   .headshot img {
     display: block;
-    width: 128px;
-    height: 128px;
+    width: 150px;
+    height: 150px;
+    margin: 0 auto;
     border-radius: 50%;
     object-fit: cover;
   }
@@ -154,14 +159,15 @@ const qrSvg = await QRCode.toString(GROUPME_URL, {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 128px;
-    height: 128px;
+    width: 150px;
+    height: 150px;
+    margin: 0 auto;
     border-radius: 50%;
     background: var(--color-text);
     color: var(--color-bg);
     font-family: var(--font-heading);
     font-weight: 600;
-    font-size: 1.5rem;
+    font-size: 1.65rem;
   }
 
   .officer .name {
@@ -177,6 +183,7 @@ const qrSvg = await QRCode.toString(GROUPME_URL, {
   }
 
   .officer .email {
+    color: var(--color-muted);
     font-size: 0.875rem;
   }
 
