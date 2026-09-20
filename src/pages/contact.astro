@@ -4,6 +4,7 @@ import { Image } from 'astro:assets';
 import QRCode from 'qrcode';
 import Layout from '../layouts/Layout.astro';
 import logo from '../assets/brand/QSA_Logo_with_text.png';
+import auLogo from '../assets/brand/AU_logo.svg';
 import {
   AU_INVOLVE_URL,
   GROUPME_URL,
@@ -39,11 +40,17 @@ function initials(name: string): string {
     .toUpperCase();
 }
 
+const linkedinIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><line x1="7.5" y1="10.5" x2="7.5" y2="17"/><circle cx="7.5" cy="6.7" r="0.9" fill="currentColor" stroke="none"/><path d="M11.5 17v-4a2.3 2.3 0 0 1 4.6 0v4"/><line x1="11.5" y1="10.5" x2="11.5" y2="17"/></svg>`;
+
+const instagramIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17" cy="7" r="0.8" fill="currentColor" stroke="none"/></svg>`;
+
+const groupmeIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5h16v10.5H9.5L5 20v-4.5H4z"/><circle cx="8.5" cy="10.5" r="0.8" fill="currentColor" stroke="none"/><circle cx="12" cy="10.5" r="0.8" fill="currentColor" stroke="none"/><circle cx="15.5" cy="10.5" r="0.8" fill="currentColor" stroke="none"/></svg>`;
+
 const socials = [
-  { label: 'LinkedIn', href: LINKEDIN_URL, text: LINKEDIN_URL },
-  { label: 'Instagram', href: INSTAGRAM_URL, text: INSTAGRAM_HANDLE },
-  { label: 'GroupMe', href: GROUPME_URL, text: GROUPME_URL },
-  { label: 'AU Involve', href: AU_INVOLVE_URL, text: AU_INVOLVE_URL },
+  { label: 'LinkedIn', href: LINKEDIN_URL, text: LINKEDIN_URL, icon: linkedinIcon },
+  { label: 'Instagram', href: INSTAGRAM_URL, text: INSTAGRAM_HANDLE, icon: instagramIcon },
+  { label: 'GroupMe', href: GROUPME_URL, text: GROUPME_URL, icon: groupmeIcon },
+  { label: 'AU Involve', href: AU_INVOLVE_URL, text: AU_INVOLVE_URL, icon: null },
 ];
 
 const qrSvg = await QRCode.toString(GROUPME_URL, {
@@ -78,16 +85,25 @@ const qrSvg = await QRCode.toString(GROUPME_URL, {
       </div>
     </div>
 
-    <div class="column">
+    <div class="column contact-column">
       <h1>Contact</h1>
       <Image src={logo} alt="Quantum Society at Auburn" width={220} class="logo" />
 
       <div class="socials">
         {socials.map((social) => (
-          <div class="social">
-            <p class="social-label">{social.label}</p>
-            <a href={social.href}>{social.text}</a>
-          </div>
+          <a class="social" href={social.href}>
+            <span class="social-icon">
+              {social.icon ? (
+                <span class="icon-svg" set:html={social.icon} />
+              ) : (
+                <Image src={auLogo} alt="Auburn University" width={22} height={19} />
+              )}
+            </span>
+            <span class="social-text">
+              <span class="social-label">{social.label}</span>
+              <span class="social-link-text">{social.text}</span>
+            </span>
+          </a>
         ))}
       </div>
 
@@ -131,6 +147,10 @@ const qrSvg = await QRCode.toString(GROUPME_URL, {
     text-align: center;
   }
 
+  .contact-column {
+    text-align: center;
+  }
+
   .officers {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
@@ -140,7 +160,7 @@ const qrSvg = await QRCode.toString(GROUPME_URL, {
   .socials {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    border: 1px solid var(--color-border);
+    gap: var(--space-lg);
   }
 
   .officer {
@@ -149,11 +169,43 @@ const qrSvg = await QRCode.toString(GROUPME_URL, {
   }
 
   .social {
-    padding: var(--space-lg);
-    border: 1px solid var(--color-border);
-    margin: -1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm);
     min-width: 0;
     overflow-wrap: anywhere;
+  }
+
+  .social-icon {
+    display: flex;
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    color: var(--color-muted);
+  }
+
+  .social-icon :global(svg),
+  .social-icon :global(img) {
+    width: 100%;
+    height: auto;
+  }
+
+  .social-text {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    min-width: 0;
+  }
+
+  .social-text .social-label {
+    font-size: 0.9375rem;
+    margin-bottom: 0;
+  }
+
+  .social-text .social-link-text {
+    font-size: 0.8125rem;
+    color: var(--color-muted);
   }
 
   .headshot {
@@ -201,7 +253,7 @@ const qrSvg = await QRCode.toString(GROUPME_URL, {
 
   .logo {
     display: block;
-    margin-bottom: var(--space-lg);
+    margin: 0 auto var(--space-lg);
   }
 
   .social-label {
@@ -217,7 +269,7 @@ const qrSvg = await QRCode.toString(GROUPME_URL, {
 
   .qr {
     width: 140px;
-    margin-top: var(--space-sm);
+    margin: var(--space-sm) auto 0;
   }
 
   .qr :global(svg) {
