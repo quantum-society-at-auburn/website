@@ -4,6 +4,7 @@ import { Image } from 'astro:assets';
 import QRCode from 'qrcode';
 import Layout from '../layouts/Layout.astro';
 import logo from '../assets/brand/QSA_Logo_with_text.png';
+import quantumComputer from '../assets/brand/Qcomputer.png';
 import {
   AU_INVOLVE_URL,
   GROUPME_URL,
@@ -63,7 +64,7 @@ const qrSvg = await QRCode.toString(GROUPME_URL, {
               <>
                 <div class="headshot">
                   {officer.photo ? (
-                    <Image src={officer.photo} alt={officer.name} width={128} height={128} />
+                    <Image src={officer.photo} alt={officer.name} width={220} height={220} />
                   ) : (
                     <div class="avatar-fallback">{initials(officer.name)}</div>
                   )}
@@ -76,6 +77,14 @@ const qrSvg = await QRCode.toString(GROUPME_URL, {
           </div>
         ))}
       </div>
+    </div>
+
+    <div class="center-visual">
+      <Image
+        src={quantumComputer}
+        alt="Illustration of a dilution refrigerator used in quantum computing"
+        width={220}
+      />
     </div>
 
     <div class="column">
@@ -102,7 +111,8 @@ const qrSvg = await QRCode.toString(GROUPME_URL, {
 <style>
   .contact-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
     justify-items: center;
     gap: var(--space-lg);
     margin-top: var(--space-lg);
@@ -124,13 +134,28 @@ const qrSvg = await QRCode.toString(GROUPME_URL, {
   }
 
   .team-column {
+    max-width: 560px;
+  }
+
+  .team-column h1 {
     text-align: center;
+  }
+
+  .center-visual {
+    display: flex;
+    justify-content: center;
+  }
+
+  .center-visual img {
+    display: block;
+    width: 220px;
+    height: auto;
   }
 
   .officers {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: var(--space-xl);
+    gap: var(--space-lg);
   }
 
   .socials {
@@ -158,9 +183,8 @@ const qrSvg = await QRCode.toString(GROUPME_URL, {
 
   .headshot img {
     display: block;
-    width: 150px;
-    height: 150px;
-    margin: 0 auto;
+    width: 220px;
+    height: 220px;
     border-radius: 50%;
     object-fit: cover;
   }
@@ -169,15 +193,14 @@ const qrSvg = await QRCode.toString(GROUPME_URL, {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 150px;
-    height: 150px;
-    margin: 0 auto;
+    width: 220px;
+    height: 220px;
     border-radius: 50%;
     background: var(--color-text);
     color: var(--color-bg);
     font-family: var(--font-heading);
     font-weight: 600;
-    font-size: 1.65rem;
+    font-size: 2.25rem;
   }
 
   .officer .name {
