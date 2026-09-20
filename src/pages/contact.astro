@@ -47,10 +47,10 @@ const instagramIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor
 const groupmeIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5h16v10.5H9.5L5 20v-4.5H4z"/><circle cx="8.5" cy="10.5" r="0.8" fill="currentColor" stroke="none"/><circle cx="12" cy="10.5" r="0.8" fill="currentColor" stroke="none"/><circle cx="15.5" cy="10.5" r="0.8" fill="currentColor" stroke="none"/></svg>`;
 
 const socials = [
-  { label: 'LinkedIn', href: LINKEDIN_URL, text: LINKEDIN_URL, icon: linkedinIcon },
+  { label: 'LinkedIn', href: LINKEDIN_URL, text: null, icon: linkedinIcon },
   { label: 'Instagram', href: INSTAGRAM_URL, text: INSTAGRAM_HANDLE, icon: instagramIcon },
-  { label: 'GroupMe', href: GROUPME_URL, text: GROUPME_URL, icon: groupmeIcon },
-  { label: 'AU Involve', href: AU_INVOLVE_URL, text: AU_INVOLVE_URL, icon: null },
+  { label: 'GroupMe', href: GROUPME_URL, text: null, icon: groupmeIcon },
+  { label: 'AU Involve', href: AU_INVOLVE_URL, text: null, icon: null },
 ];
 
 const qrSvg = await QRCode.toString(GROUPME_URL, {
@@ -101,7 +101,7 @@ const qrSvg = await QRCode.toString(GROUPME_URL, {
             </span>
             <span class="social-text">
               <span class="social-label">{social.label}</span>
-              <span class="social-link-text">{social.text}</span>
+              {social.text && <span class="social-link-text">{social.text}</span>}
             </span>
           </a>
         ))}
