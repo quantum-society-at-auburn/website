@@ -58,11 +58,13 @@ const forms = defineCollection({
 
 const officers = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/officers' }),
-  schema: z.object({
-    role: z.enum(['president', 'vp-operations', 'vp-outreach', 'vp-programs']),
-    name: z.string(),
-    email: z.string(),
-  }),
+  schema: ({ image }) =>
+    z.object({
+      role: z.enum(['president', 'vp-operations', 'vp-outreach', 'vp-programs']),
+      name: z.string(),
+      email: z.string(),
+      photo: image().optional(),
+    }),
 });
 
 export const collections = { slides, notes, notebooks, schedule, forms, officers };

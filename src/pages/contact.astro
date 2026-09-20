@@ -4,7 +4,13 @@ import { Image } from 'astro:assets';
 import QRCode from 'qrcode';
 import Layout from '../layouts/Layout.astro';
 import logo from '../assets/brand/QSA_Logo_with_text.png';
-import { AU_INVOLVE_URL, GROUPME_URL } from '../data/contact-links';
+import {
+  AU_INVOLVE_URL,
+  GROUPME_URL,
+  LINKEDIN_URL,
+  INSTAGRAM_URL,
+  INSTAGRAM_HANDLE,
+} from '../data/contact-links';
 
 const officers = await getCollection('officers');
 const byRole = (role: string) => officers.find((o) => o.data.role === role)?.data;
@@ -23,6 +29,23 @@ const roleLabels: Record<string, string> = {
   'vp-programs': 'VP of Programs',
 };
 
+function initials(name: string): string {
+  return name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((word) => word[0])
+    .join('')
+    .toUpperCase();
+}
+
+const socials = [
+  { label: 'LinkedIn', href: LINKEDIN_URL, text: LINKEDIN_URL },
+  { label: 'Instagram', href: INSTAGRAM_URL, text: INSTAGRAM_HANDLE },
+  { label: 'GroupMe', href: GROUPME_URL, text: GROUPME_URL },
+  { label: 'AU Involve', href: AU_INVOLVE_URL, text: AU_INVOLVE_URL },
+];
+
 const qrSvg = await QRCode.toString(GROUPME_URL, {
   type: 'svg',
   margin: 1,
@@ -30,35 +53,46 @@ const qrSvg = await QRCode.toString(GROUPME_URL, {
 });
 ---
 <Layout title="Contact — Quantum Society at Auburn">
-  <h1>Contact</h1>
-  <p>Reach an officer directly, or find us on AU Involve and GroupMe.</p>
-
   <div class="contact-grid">
-    <div class="officers">
-      {corners.map((officer) => (
-        <div class="officer">
-          {officer && (
-            <>
-              <p class="role">{roleLabels[officer.role]}</p>
-              <p class="name">{officer.name}</p>
-              <a href={`mailto:${officer.email}`}>{officer.email}</a>
-            </>
-          )}
-        </div>
-      ))}
+    <div class="column">
+      <h1>The Team</h1>
+      <div class="officers">
+        {corners.map((officer) => (
+          <div class="officer">
+            {officer && (
+              <>
+                <div class="headshot">
+                  {officer.photo ? (
+                    <Image src={officer.photo} alt={officer.name} width={96} height={96} />
+                  ) : (
+                    <div class="avatar-fallback">{initials(officer.name)}</div>
+                  )}
+                </div>
+                <p class="role">{roleLabels[officer.role]}</p>
+                <p class="name">{officer.name}</p>
+                <a href={`mailto:${officer.email}`}>{officer.email}</a>
+              </>
+            )}
+          </div>
+        ))}
+      </div>
     </div>
 
-    <div class="links">
-      <Image src={logo} alt="Quantum Society at Auburn" width={140} />
+    <div class="column">
+      <h1>Contact</h1>
+      <Image src={logo} alt="Quantum Society at Auburn" width={220} class="logo" />
 
-      <div class="link-section">
-        <h2>AU Involve</h2>
-        <a href={AU_INVOLVE_URL}>{AU_INVOLVE_URL}</a>
+      <div class="socials">
+        {socials.map((social) => (
+          <div class="social">
+            <p class="social-label">{social.label}</p>
+            <a href={social.href}>{social.text}</a>
+          </div>
+        ))}
       </div>
 
-      <div class="link-section">
-        <h2>GroupMe</h2>
-        <a href={GROUPME_URL}>{GROUPME_URL}</a>
+      <div class="qr-section">
+        <p class="social-label">Scan to join GroupMe</p>
         <div class="qr" set:html={qrSvg} />
       </div>
     </div>
@@ -68,23 +102,57 @@ const qrSvg = await QRCode.toString(GROUPME_URL, {
 <style>
   .contact-grid {
     display: flex;
-    gap: var(--space-xl);
+    gap: var(--space-lg);
     flex-wrap: wrap;
     margin-top: var(--space-lg);
   }
 
-  .officers {
+  .column {
     flex: 1 1 320px;
     max-width: 420px;
+    min-width: 0;
+  }
+
+  .officers,
+  .socials {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     border: 1px solid var(--color-border);
   }
 
-  .officer {
+  .officer,
+  .social {
     padding: var(--space-lg);
     border: 1px solid var(--color-border);
     margin: -1px;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .headshot {
+    margin-bottom: var(--space-sm);
+  }
+
+  .headshot img {
+    display: block;
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .avatar-fallback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: var(--color-text);
+    color: var(--color-bg);
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 1.125rem;
   }
 
   .officer .role {
@@ -99,16 +167,20 @@ const qrSvg = await QRCode.toString(GROUPME_URL, {
     margin-bottom: var(--space-xs);
   }
 
-  .links {
-    flex: 1 1 280px;
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-lg);
+  .logo {
+    display: block;
+    margin-bottom: var(--space-lg);
   }
 
-  .link-section h2 {
+  .social-label {
+    font-family: var(--font-heading);
+    font-weight: 600;
     font-size: 1.125rem;
     margin-bottom: var(--space-xs);
+  }
+
+  .qr-section {
+    margin-top: var(--space-lg);
   }
 
   .qr {
