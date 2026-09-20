@@ -153,6 +153,11 @@ Added an `officers` content collection (`role`/`name`/`email`), 4 officer entrie
 **Files:** `src/content/officers/*.md`, `src/data/contact-links.ts`
 **Status:** Committed as `e28ab36`, pushed, `deploy.yml` ran green (deploy 10s). Live: `/contact` (200).
 
+## [DONE] Pass 6 — Center each column within its own half of the page
+**What:** The Team and Contact columns previously sat as a packed flex row (flush together near the middle of `main`, not centered within their own halves). Switched `.contact-grid` to a two-track CSS grid (`grid-template-columns: 1fr 1fr`) with `justify-items: center`, so each `max-width: 420px` column now centers within its own half; added a 640px breakpoint (`grid-template-columns: 1fr`) to replace the stacking behavior the old `flex-wrap` provided.
+**Files:** `src/pages/contact.astro`
+**Status:** Verified via dev-server screenshot — Team column centered in the left half, Contact column centered in the right half. Committed as `c3783db`, pushed, `deploy.yml` ran green (deploy 8s). Live: `/contact` (200).
+
 ## Open Questions
 - **[NEEDS INPUT]** VP of Outreach and VP of Programs names/emails (still `"TBD"`), officer photos, and the real Instagram profile URL (`INSTAGRAM_URL` in `contact-links.ts` is still `REPLACE_WITH_IG_HANDLE` even though `INSTAGRAM_HANDLE` was updated to the real `@auburnquantum`).
 
