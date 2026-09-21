@@ -272,7 +272,7 @@ export function getResourceSections(): ResourceSection[] {
 
   const sections = [...bySection.values()];
   sections.sort((a, b) => {
-    if (a.date && b.date) return b.date.valueOf() - a.date.valueOf();
+    if (a.date && b.date) return a.date.valueOf() - b.date.valueOf();
     if (a.date && !b.date) return -1;
     if (!a.date && b.date) return 1;
     return collator.compare(a.title, b.title);
