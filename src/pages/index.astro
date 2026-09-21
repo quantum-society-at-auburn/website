@@ -7,19 +7,27 @@ const base = import.meta.env.BASE_URL;
 ---
 <Layout title="Quantum Society at Auburn">
   <section class="hero">
-    <div class="hero-text">
-      <h1>Quantum computing, studied together.</h1>
-      <p>
-        The Quantum Society at Auburn is a student group for anyone curious about
-        quantum computing and quantum physics — no prior background required.
-        We run weekly sessions, share what we're reading, and build things with
-        real quantum hardware and simulators.
-      </p>
-      <p class="links">
-        <a class="button" href={`${base}resources`}>Browse resources</a>
-        <a href={`${base}announcements`}>See upcoming meetings</a>
-        <a href={`${base}contact`}>Get in touch</a>
-      </p>
+    <div class="hero-content">
+      <div class="meeting-block">
+        <p class="meeting-label">Meetings</p>
+        <p class="meeting-detail">Biweekly &middot; Wednesdays, 5:00 PM</p>
+        <p class="meeting-detail">Govil Hall, Room 2126</p>
+      </div>
+      <div class="hero-text">
+        <h1>Welcome!</h1>
+        <p>
+          The Quantum Society at Auburn is a Auburn's only club dedicated to fostering a community around curiosity in quantum sciences.
+          Founded this semester, our goal is to build a community and interest in learning about applications of quantum physics, from
+          computing to sensing. Our meetings are biweekly, Wednesdays at 5PM in the brand new Govil Hall (Stem+Ag Building A), where we
+          host workshops teaching people about the fundamentals of quantum computing. We also host a competitive hackathon team, where we'll
+          have practices and compete in virtual and in-person quantum hackathons.
+        </p>
+        <p class="links">
+          <a class="button" href={`${base}resources`}>Browse resources</a>
+          <a href={`${base}announcements`}>See upcoming meetings</a>
+          <a href={`${base}contact`}>Get in touch</a>
+        </p>
+      </div>
     </div>
     <Image src={quantumComputer} alt="Illustration of a dilution refrigerator used in quantum computing" width={280} loading="eager" />
   </section>
@@ -34,8 +42,39 @@ const base = import.meta.env.BASE_URL;
     flex-wrap: wrap;
   }
 
-  .hero-text {
+  .hero-content {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-lg);
+    flex-wrap: wrap;
     flex: 1 1 420px;
+  }
+
+  .hero-text {
+    flex: 1 1 300px;
+  }
+
+  .meeting-block {
+    flex: 0 0 170px;
+    border-left: 3px solid var(--color-accent);
+    padding-left: var(--space-md);
+  }
+
+  .meeting-label {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: var(--space-xs);
+  }
+
+  .meeting-detail {
+    color: var(--color-muted);
+    font-size: 0.9375rem;
+    margin-bottom: var(--space-xs);
+  }
+
+  .meeting-detail:last-child {
+    margin-bottom: 0;
   }
 
   .hero h1 {

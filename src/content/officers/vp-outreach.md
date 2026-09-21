@@ -1,5 +1,5 @@
 ---
 role: "vp-outreach"
-name: "TBD"
+name: "COMING SOON"
 email: ""
 ---

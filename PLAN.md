@@ -195,7 +195,31 @@ Added an `officers` content collection (`role`/`name`/`email`), 4 officer entrie
 **Files:** `src/pages/contact.astro`
 **Status:** Committed as `3f6097f`, pushed, `deploy.yml` ran green (deploy 9s). Live: `/contact` (200).
 
+## Pass 14 — Home page: add a "Meetings" info block to the left of the hero
+**Goal:** Add a small block to the left of the Landing page's hero content stating the meeting cadence, day/time, and room: biweekly, Wednesdays at 5PM, Govil Hall Room 2126.
+**Constraint source:** `CLAUDE.md` reviewed ✓.
+**Prior plan:** New scope — first change to `src/pages/index.astro` this session (all prior passes were Contact page only).
+**Created:** 2026-09-20
+
+**Research done:**
+- Re-read `src/pages/index.astro`: `.hero` is a flex row with two children — `.hero-text` (h1 + intro paragraph, which already mentions "biweekly, Wednesdays at 5PM in the brand new Govil Hall (Stem+Ag Building A)" but no room number) and the `Qcomputer.png` illustration. `flex-wrap: wrap` already handles narrow viewports.
+- Re-read `src/pages/announcements.astro` for the site's established info-block convention: a hairline `border-top` divided-list row (`.row`/`.date`/`.details`), Zilla Slab for the heading/label, muted Slate for metadata — no rounded-card/soft-shadow kit anywhere on the site. The new block should follow this same hairline convention, not introduce a card style.
+- Decision: render the block as `.meeting-block`, the first child inside `.hero` (so it sits left of `.hero-text`, with the illustration staying rightmost), styled as a bordered box with a left accent rule in Signal Orange (`--color-accent`) — consistent with the site's restraint (one accent, no shadow) rather than a generic bordered-card treatment repeated on all four sides.
+
+## Step 1: Add the meeting-info markup and styles to the home page
+**What:** In `src/pages/index.astro`, add a `<div class="meeting-block">` as the first child of `.hero` (before `.hero-text`), containing a small label ("Meetings") and two lines: "Biweekly · Wednesdays, 5:00 PM" and "Govil Hall, Room 2126". Style it with `border-left: 3px solid var(--color-accent)`, `padding-left`/`padding-block` using existing spacing tokens, `font-family: var(--font-heading)` for the label, muted Slate for the detail lines — no shadow, no rounded corners beyond the site's existing 2px radius convention. Give `.hero` a `flex-basis` for the new block (e.g. `flex: 0 1 220px`) so it reads as a compact aside next to the wider `.hero-text`, and confirm the existing `flex-wrap: wrap` still stacks all three pieces cleanly on narrow viewports.
+**Files:** `src/pages/index.astro`
+**Verify:** `npm run build` succeeds.
+
+## Step 2: Visual QA, build, commit, push, verify live deploy
+**What:** Start the dev server (`astro dev --background`), screenshot the Landing page at desktop and narrow widths to confirm the meeting block sits to the left of the hero text, reads clearly, and doesn't crowd the illustration or break wrapping on mobile; check for horizontal overflow (`document.documentElement.scrollWidth` vs `clientWidth`), per the earlier full-bleed layout bug on Contact. Stop the server, `npm run build`, commit, push to `main`, watch `deploy.yml` via `gh run watch`, `curl` the home page to confirm 200.
+**Verify:** `gh run watch` green; home page returns 200; screenshots confirm the block's position and no overflow at both widths.
+
 ## Open Questions
+None.
+
+## Out of Scope
+- Rewording the existing hero paragraph (it already mentions the meeting cadence/day/time/building; this pass adds a distinct, scannable block rather than editing that prose).
 - **[NEEDS INPUT]** VP of Outreach and VP of Programs names/emails (still `"TBD"`), officer photos, and the real Instagram profile URL (`INSTAGRAM_URL` in `contact-links.ts` is still `REPLACE_WITH_IG_HANDLE` even though `INSTAGRAM_HANDLE` was updated to the real `@auburnquantum`).
 
 ## Out of Scope
