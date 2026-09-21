@@ -39,7 +39,7 @@ const schedule = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/schedule' }),
   schema: z.object({
     eventName: z.string(),
-    date: z.coerce.date(),
+    date: z.coerce.date().or(z.string()),
     time: z.string(),
     location: z.string(),
     description: z.string().optional(),

@@ -2,11 +2,19 @@
 import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
 
-const events = (await getCollection('schedule')).sort(
-  (a, b) => a.data.date.valueOf() - b.data.date.valueOf()
-);
-
 const dateFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
+
+function sortTime(date: Date | string) {
+  return date instanceof Date ? date.valueOf() : Number.POSITIVE_INFINITY;
+}
+
+function formatDate(date: Date | string) {
+  return date instanceof Date ? dateFormatter.format(date) : date;
+}
+
+const events = (await getCollection('schedule')).sort(
+  (a, b) => sortTime(a.data.date) - sortTime(b.data.date)
+);
 ---
 <Layout title="Announcements — Quantum Society at Auburn">
   <h1>Announcements</h1>
@@ -15,7 +23,7 @@ const dateFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'n
   <ul class="schedule">
     {events.map((event) => (
       <li class="row">
-        <span class="date">{dateFormatter.format(event.data.date)}</span>
+        <span class="date">{formatDate(event.data.date)}</span>
         <div class="details">
           <h2>{event.data.eventName}</h2>
           <p class="meta">{event.data.time} &middot; {event.data.location}</p>
