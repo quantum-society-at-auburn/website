@@ -302,3 +302,47 @@ None.
 ## Out of Scope
 - Sourcing or generating actual headshot photos — only the schema field + fallback UI ship now.
 - A form-based way for officers to self-edit this data (Decap CMS still paused).
+
+---
+
+# Plan: QSA Website — Add a 5th officer (VP of Treasury)
+
+**Goal:** Add "VP of Treasury" as a 5th officer on the Contact page's Leadership section, unfilled (same placeholder format as VP of Outreach/VP of Programs), positioned at the bottom, centered below the existing 2×2 grid.
+**Constraint source:** `CLAUDE.md` reviewed ✓.
+**Prior plan:** New scope, unrelated to the most recent Resources-page work above. Touches `src/content.config.ts` (officers schema) and `src/pages/contact.astro` only.
+**Created:** 2026-09-21
+
+**Research done:**
+- `src/content.config.ts`: `officers` collection's `role` field is `z.enum(['president', 'vp-operations', 'vp-outreach', 'vp-programs'])` — a closed enum, so adding a 5th role requires extending this list or the new content entry fails schema validation.
+- `src/content/officers/vp-outreach.md` and `vp-programs.md` (the two unfilled placeholders) both follow the exact same shape: `role`, `name: "COMING SOON"`, `email: ""` — this is the format to copy verbatim for the new `vp-treasury.md`.
+- `src/pages/contact.astro`: officers are read via `getCollection('officers')` + `byRole()`, assembled into a `corners` array (currently `[president, vp-operations, vp-outreach, vp-programs]`) mapped 1:1 into `.officer` divs inside `.officers`, a CSS grid with `grid-template-columns: minmax(0, 1fr) minmax(0, 1fr)` — i.e. exactly a 2-column grid, which is what makes the 4 existing officers read as a 2×2. `roleLabels` is a separate `Record<string, string>` used to render each officer's position title. Grep confirmed no other file references officer roles — this is fully self-contained to `content.config.ts` + `contact.astro` + the new content file.
+- A 5th grid item, added as-is, would land in column 1 of row 3 (left-aligned, not centered) since `.officer` has no `text-align`/centering rules today (Team column content is intentionally left-aligned per an earlier pass). To render "at the bottom, between/centered under the 2×2" as asked, the 5th item needs `grid-column: 1 / -1` (span both columns) plus its own centering — the other 4 officers must stay untouched/left-aligned.
+
+---
+
+## Step 1: Add the `vp-treasury` role to the officers schema
+**What:** In `src/content.config.ts`, add `'vp-treasury'` to the `officers` collection's `role` enum.
+**Files:** `src/content.config.ts`
+**Verify:** `npm run build` succeeds.
+
+## Step 2: Add the VP of Treasury content entry
+**What:** Create `src/content/officers/vp-treasury.md` copying the exact placeholder shape of `vp-outreach.md`/`vp-programs.md`: `role: "vp-treasury"`, `name: "COMING SOON"`, `email: ""`.
+**Files:** `src/content/officers/vp-treasury.md` (new)
+**Verify:** `npm run build` succeeds with the new entry validating against the updated schema.
+
+## Step 3: Render the 5th officer, centered, spanning both columns at the bottom
+**What:** In `src/pages/contact.astro`: add `byRole('vp-treasury')` as a 5th entry to the `corners` array (rename to `officersList` for clarity, since it's no longer just 4 corners); add `'vp-treasury': 'VP of Treasury'` to `roleLabels`. In the `.officer` map, give the VP of Treasury div an extra `officer-wide` class (checked via `officer?.role === 'vp-treasury'`). Add a `.officer-wide` CSS rule: `grid-column: 1 / -1` (spans the full grid width, dropping it below the 2×2 as its own row) plus `display: flex; flex-direction: column; align-items: center; text-align: center` so its headshot/name/role/email all center under the pair of rows above — the other 4 officers keep their current left-aligned, single-column styling untouched.
+**Files:** `src/pages/contact.astro`
+**Verify:** Dev-server screenshot shows 4 officers as the existing 2×2, with VP of Treasury (initials-fallback circle, "COMING SOON", "VP of Treasury", empty email link) centered in its own row beneath them, spanning the full width of the Leadership column.
+
+## Step 4: Visual QA, build, commit, push, verify live deploy
+**What:** Start the dev server, screenshot the Contact page to confirm Step 3's layout and that the Contact column (right side) is untouched; check for horizontal overflow (`document.documentElement.scrollWidth` vs `clientWidth`). Stop the server, `npm run build`, commit, push to `main`, watch `deploy.yml`, `curl` `/contact` to confirm 200.
+**Verify:** `gh run watch` green; `/contact` returns 200; screenshot confirms the centered 5th-officer row and unchanged 2×2/Contact column.
+**Status:** Screenshot confirmed the 2×2 (President/VP Operations/VP Outreach/VP Programs) renders unchanged, and VP of Treasury (initials fallback "CS", "COMING SOON", "VP of Treasury") renders in its own row below, centered under the full width of the Leadership column. Contact column untouched. No horizontal overflow (`scrollWidth === clientWidth`, 1631). Committed and pushed; `deploy.yml` verified green; live `/contact` returns 200.
+
+## Open Questions
+None.
+
+## Out of Scope
+- Real name/email for VP of Treasury — ships as the same `"COMING SOON"` placeholder as the other two unfilled roles.
+- Any change to the right "Contact" column.

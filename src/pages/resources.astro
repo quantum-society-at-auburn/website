@@ -5,9 +5,9 @@ import { getResourceSections } from '../lib/resources';
 const base = import.meta.env.BASE_URL;
 const sections = getResourceSections();
 ---
-<Layout title="Resources — Quantum Society at Auburn">
+<Layout title="Resources">
   <h1>Resources</h1>
-  <p>Slides, notes, and other materials from past sessions, organized by week.</p>
+  <p>Slides, notes, and other materials from past sessions</p>
 
   {sections.length === 0 && <p>No resources posted yet — check back soon.</p>}
 

@@ -60,7 +60,7 @@ const officers = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/officers' }),
   schema: ({ image }) =>
     z.object({
-      role: z.enum(['president', 'vp-operations', 'vp-outreach', 'vp-programs']),
+      role: z.enum(['president', 'vp-operations', 'vp-outreach', 'vp-programs', 'vp-treasury']),
       name: z.string(),
       email: z.string(),
       photo: image().optional(),

@@ -16,11 +16,12 @@ import {
 const officers = await getCollection('officers');
 const byRole = (role: string) => officers.find((o) => o.data.role === role)?.data;
 
-const corners = [
+const officersList = [
   byRole('president'),
   byRole('vp-operations'),
   byRole('vp-outreach'),
   byRole('vp-programs'),
+  byRole('vp-treasury'),
 ];
 
 const roleLabels: Record<string, string> = {
@@ -28,6 +29,7 @@ const roleLabels: Record<string, string> = {
   'vp-operations': 'VP of Operations',
   'vp-outreach': 'VP of Outreach',
   'vp-programs': 'VP of Programs',
+  'vp-treasury': 'VP of Treasury',
 };
 
 function initials(name: string): string {
@@ -64,8 +66,8 @@ const qrSvg = await QRCode.toString(GROUPME_URL, {
     <div class="column team-column">
       <h1>Leadership</h1>
       <div class="officers">
-        {corners.map((officer) => (
-          <div class="officer">
+        {officersList.map((officer) => (
+          <div class={`officer ${officer?.role === 'vp-treasury' ? 'officer-wide' : ''}`}>
             {officer && (
               <>
                 <div class="headshot">
@@ -166,6 +168,14 @@ const qrSvg = await QRCode.toString(GROUPME_URL, {
   .officer {
     min-width: 0;
     overflow-wrap: anywhere;
+  }
+
+  .officer-wide {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
   }
 
   .social {
