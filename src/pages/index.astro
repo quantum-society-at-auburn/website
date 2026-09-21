@@ -15,7 +15,7 @@ const upcoming = schedule
 
 const alwaysShow = schedule.filter((event) => typeof event.data.date === 'string');
 
-const events = [...upcoming, ...alwaysShow];
+const events = [...upcoming, ...alwaysShow].reverse();
 
 const dateFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
 

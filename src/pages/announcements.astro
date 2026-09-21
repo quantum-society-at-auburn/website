@@ -14,9 +14,9 @@ function formatDate(date: Date | string) {
   return date instanceof Date ? dateFormatter.format(date) : date;
 }
 
-const events = (await getCollection('schedule')).sort(
-  (a, b) => sortTime(a.data.date) - sortTime(b.data.date)
-);
+const events = (await getCollection('schedule'))
+  .sort((a, b) => sortTime(a.data.date) - sortTime(b.data.date))
+  .reverse();
 ---
 <Layout title="Announcements — Quantum Society at Auburn">
   <h1>Announcements</h1>
