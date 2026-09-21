@@ -259,6 +259,46 @@ None.
 **Files:** `src/content.config.ts`, `src/pages/announcements.astro`, `src/pages/index.astro`, `src/pages/forms/[slug].astro` (new, replaces `feedback.astro`/`rsvp.astro`/`signup.astro`)
 **Status:** Verified via `npm run build` (clean, `/forms/generalinfo` and `/forms/outreachvp_app` both generate) and dev-server screenshots (Forms section renders on both pages with working links; clicking through to `/forms/generalinfo` shows the nav/footer chrome, title, description, and the Google Form iframe — none of which the old page had). Committed as `65cadc9` (schedule date fix) and `e6f3189` (forms fix), pushed, both deploys ran green. Live: `/`, `/announcements`, `/forms/generalinfo`, `/forms/outreachvp_app` all return 200.
 
+## [DONE] Pass 17 — Turn forms into announcements, reverse list order
+**What:** Two quick direct follow-ups to Pass 16:
+1. User reverted the standalone "Forms" section: removed it from `index.astro`/`announcements.astro` entirely. Instead, each form is now its own `schedule` entry (`general-interest-form.md`, `vp-outreach-application.md`, `date: "Ongoing"`) linked via the existing (previously unused) `rsvpFormSlug` field — the event name renders as a hyperlink to `/forms/{rsvpFormSlug}` when that field is set. The home page's condensed panel logic changed from "only real dated upcoming events" to "upcoming dated events (top 3) + all string-dated entries always shown" so the undated form entries (and the pre-existing "TBD" hackathon meeting) appear there too.
+2. User asked to reverse the announcement order on both pages — added `.reverse()` after the existing sort on both `announcements.astro`'s `events` and `index.astro`'s combined `events` array (literal list-flip, not a sort-direction change, per explicit instruction).
+**Files:** `src/pages/announcements.astro`, `src/pages/index.astro`, `src/content/schedule/general-interest-form.md` (new), `src/content/schedule/vp-outreach-application.md` (new)
+**Status:** Verified via dev-server screenshots on both pages (forms render as hyperlinked "Ongoing" rows, reversed order confirmed via rendered `class="date"`/`class="mini-date"` sequence). Committed as `ad47e58` (forms-as-announcements) and `e0561d2` (reverse order), pushed, both deploys green. Live: `/`, `/announcements`, `/forms/generalinfo`, `/forms/outreachvp_app` all 200.
+
+## [DONE] Pass 18 — Resources page: folder-driven weekly sections
+**Goal:** Replace the empty, frontmatter-driven `slides`/`notes`/`notebooks` collections with a zero-friction system: any subfolder under `src/content/resources/` becomes a named section on the Resources page, and any file dropped into it automatically gets its own page with the file embedded (viewable) and downloadable — no markdown authoring, no manual registration.
+**Constraint source:** `CLAUDE.md` reviewed ✓. Full research/design detail recorded in the harness plan file (`i-want-to-build-cozy-metcalfe.md`).
+**Created:** 2026-09-21
+
+**Decisions locked in (via AskUserQuestion):** Non-PDF/image files (pptx/docx/xlsx) embed via Microsoft's Office Online Viewer in production; PDFs/images embed natively always; everything else is download-only.
+
+## Step 1: Add `src/lib/resources.ts`
+**What:** `getResourceSections()`/`findResourceFile()` built on `import.meta.glob('/src/content/resources/**/*', { eager: true, query: '?url&no-inline', import: 'default' })`, parsing each path into `{ section, filename }`, natural-sorting (`Intl.Collator({ numeric: true })`) so "Week 10" doesn't sort before "Week 2", and deriving display titles/URL slugs.
+**Files:** `src/lib/resources.ts` (new)
+
+## Step 2 & 3: Rewrite the Resources index page; add the per-file dynamic page
+**What:** `resources.astro` drops the old `getCollection('slides'/'notes'/'notebooks')` flat filtered list entirely and renders one `<section>` per folder. New `src/pages/resources/[section]/[file].astro` (`getStaticPaths()` off `getResourceSections()`, same shape as `forms/[slug].astro`) renders a breadcrumb, title, type-appropriate embed, and a `.button`-styled Download link.
+**Files:** `src/pages/resources.astro`, `src/pages/resources/[section]/[file].astro` (new)
+
+## Step 4: End-to-end test, 2 real bugs found and fixed
+**What:** Added a real test PDF + a placeholder `.pptx` under a temporary `Week 1` folder, built, and screenshotted.
+**Bugs caught:**
+1. Vite's default `assetsInlineLimit` silently inlined both small test files as `data:` URIs instead of emitting real asset files — this would have broken the Office Viewer entirely (it needs a fetchable URL, not a data URI) for any real file small enough to qualify. Fixed by adding `&no-inline` to the glob's `query` string, forcing a real emitted file regardless of size.
+2. In `astro dev`, Vite's `?url` resolution returns raw source-relative paths (`/src/content/resources/...`) that don't include Astro's configured `base` (`/website/`) — 404s in local preview even though the production build's URLs are correctly base-prefixed. Fixed with a `resolveUrl()` helper in `resources.ts` that prepends `import.meta.env.BASE_URL` only when `import.meta.env.DEV` is true.
+**Status:** After both fixes, dev-server screenshots confirmed: Resources index shows the "Week 1" section with both files; the PDF page's iframe actually loads the file (Chrome's PDF viewer shows "1/1", confirmed via `curl` 200 on the resolved dev URL); the pptx page correctly shows the dev-mode "Preview available once this page is live" fallback (not a broken iframe) with a working Download link (`curl` 200). Production build re-verified afterward to confirm the dev-mode base-path fix didn't double-prefix production URLs (`/website/_astro/....pdf`, Office Viewer URL correctly wraps the full `https://quantum-society-at-auburn.github.io/website/...` URL). Test files then deleted; `src/content/resources/` ships genuinely empty (just `.gitkeep`) for the user's real materials.
+
+## Step 5: Build, commit, push, verify live deploy
+**Status:** Committed as `327e93b`, pushed, `deploy.yml` ran green (build 18s; deploy took longer than usual this run — several minutes — but completed successfully, no indication it was caused by this change). Live: `/resources` (200).
+
+## Open Questions
+None.
+
+## Out of Scope
+- Removing the now-unused `slides`/`notes`/`notebooks` collection declarations from `content.config.ts` — left in place, harmless.
+- Supporting nested subfolders within a section, or `.ipynb`-specific preview rendering.
+- **[NEEDS INPUT]** The Office Viewer embed itself hasn't been confirmed against a real deployed file yet (only URL-construction was verified) — worth checking once the user adds a real slide deck.
+
 ## Out of Scope
 - Sourcing or generating actual headshot photos — only the schema field + fallback UI ship now.
 - A form-based way for officers to self-edit this data (Decap CMS still paused).
