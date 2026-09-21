@@ -3,14 +3,14 @@ import '../styles/global.css';
 import { getImage } from 'astro:assets';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
-import qMark from '../assets/brand/Q_blank.png';
+import qMark from '../assets/brand/Q_bg.png';
 
 interface Props {
   title: string;
 }
 
 const { title } = Astro.props;
-const favicon = await getImage({ src: qMark, width: 64, height: 71, format: 'png' });
+const favicon = await getImage({ src: qMark, width: 64, height: 64, format: 'png' });
 ---
 <html lang="en">
   <head>
