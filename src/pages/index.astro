@@ -6,6 +6,8 @@ import quantumComputer from '../assets/brand/Qcomputer.png';
 
 const base = import.meta.env.BASE_URL;
 
+const forms = await getCollection('forms');
+
 const events = (await getCollection('schedule'))
   .filter((event) => event.data.date instanceof Date && event.data.date.valueOf() >= Date.now())
   .sort((a, b) => (a.data.date as Date).valueOf() - (b.data.date as Date).valueOf())
@@ -54,6 +56,17 @@ const dateFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'n
     </div>
     <Image src={quantumComputer} alt="Illustration of a dilution refrigerator used in quantum computing" width={280} loading="eager" />
   </section>
+
+  {forms.length > 0 && (
+    <section class="forms-section">
+      <h2>Forms</h2>
+      <ul class="forms-list">
+        {forms.map((form) => (
+          <li><a href={`${base}forms/${form.id}`}>{form.data.title}</a></li>
+        ))}
+      </ul>
+    </section>
+  )}
 </Layout>
 
 <style>
@@ -152,5 +165,21 @@ const dateFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'n
     flex: 0 1 280px;
     height: auto;
     align-self: center;
+  }
+
+  .forms-section {
+    margin-top: var(--space-xl);
+    padding-top: var(--space-lg);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .forms-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .forms-list li {
+    padding: var(--space-sm) 0;
   }
 </style>
