@@ -1,26 +1,55 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { getResourceSections } from '../lib/resources';
+import { getResourceSections, CATEGORY_LABELS } from '../lib/resources';
+import type { ResourceFile } from '../lib/resources';
 
 const base = import.meta.env.BASE_URL;
 const sections = getResourceSections();
+
+// section.files is already sorted by category (see getResourceSections), so
+// grouping just needs to split it into consecutive same-category runs.
+function groupByCategory(files: ResourceFile[]) {
+  const groups: { label: string; files: ResourceFile[] }[] = [];
+  for (const file of files) {
+    const last = groups[groups.length - 1];
+    const label = CATEGORY_LABELS[file.category];
+    if (last && last.label === label) {
+      last.files.push(file);
+    } else {
+      groups.push({ label, files: [file] });
+    }
+  }
+  return groups;
+}
 ---
 <Layout title="Resources">
   <h1>Resources</h1>
   <p>Slides, notes, and other materials from past sessions</p>
 
-  {sections.length === 0 && <p>No resources posted yet — check back soon.</p>}
+  {sections.length === 0 && <p>Nothing yet, check again soon</p>}
 
   {sections.map((section) => (
     <section class="resource-section">
       <h2>{section.section}</h2>
-      <ul class="file-list">
-        {section.files.map((file) => (
-          <li class="row">
-            <a href={`${base}resources/${section.sectionSlug}/${file.slug}`}>{file.title}</a>
-          </li>
-        ))}
-      </ul>
+      {groupByCategory(section.files).map((group) => (
+        <div class="category-group">
+          <h3>{group.label}</h3>
+          <ul class="file-list">
+            {group.files.map((file) => (
+              <li class="row">
+                {file.kind === 'link' ? (
+                  <>
+                    <a href={file.url} target="_blank" rel="noopener noreferrer">{file.title}</a>
+                    {file.description && <p class="link-desc">{file.description}</p>}
+                  </>
+                ) : (
+                  <a href={`${base}resources/${section.sectionSlug}/${file.slug}`}>{file.title}</a>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
     </section>
   ))}
 </Layout>
@@ -32,6 +61,20 @@ const sections = getResourceSections();
 
   .resource-section h2 {
     margin-bottom: var(--space-sm);
+  }
+
+  .category-group {
+    margin-top: var(--space-md);
+  }
+
+  .category-group h3 {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-muted);
+    margin-bottom: var(--space-xs);
   }
 
   .file-list {
@@ -53,5 +96,11 @@ const sections = getResourceSections();
     font-family: var(--font-heading);
     font-weight: 600;
     font-size: 1.0625rem;
+  }
+
+  .link-desc {
+    margin: var(--space-xs) 0 0;
+    color: var(--color-muted);
+    font-size: 0.9375rem;
   }
 </style>
