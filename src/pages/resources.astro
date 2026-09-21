@@ -1,118 +1,47 @@
 ---
-import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
+import { getResourceSections } from '../lib/resources';
 
-const [slides, notes, notebooks] = await Promise.all([
-  getCollection('slides'),
-  getCollection('notes'),
-  getCollection('notebooks'),
-]);
-
-type Item = {
-  type: 'Slides' | 'Notes' | 'Notebook';
-  title: string;
-  date: Date;
-  tags: string[];
-  description?: string;
-  href: string;
-};
-
-const items: Item[] = [
-  ...slides.map((e) => ({
-    type: 'Slides' as const,
-    title: e.data.title,
-    date: e.data.date,
-    tags: e.data.tags,
-    description: e.data.description,
-    href: e.data.fileUrl,
-  })),
-  ...notes.map((e) => ({
-    type: 'Notes' as const,
-    title: e.data.title,
-    date: e.data.date,
-    tags: e.data.tags,
-    description: e.data.description,
-    href: e.data.fileUrl ?? `#${e.id}`,
-  })),
-  ...notebooks.map((e) => ({
-    type: 'Notebook' as const,
-    title: e.data.title,
-    date: e.data.date,
-    tags: e.data.tags,
-    description: e.data.description,
-    href: e.data.githubUrl ?? e.data.colabUrl ?? '#',
-  })),
-].sort((a, b) => b.date.valueOf() - a.date.valueOf());
-
-const types = ['All', 'Slides', 'Notes', 'Notebook'] as const;
-const dateFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
+const base = import.meta.env.BASE_URL;
+const sections = getResourceSections();
 ---
 <Layout title="Resources — Quantum Society at Auburn">
   <h1>Resources</h1>
-  <p>Slides, notes, and notebooks from past sessions.</p>
+  <p>Slides, notes, and other materials from past sessions, organized by week.</p>
 
-  <div class="filters" role="group" aria-label="Filter by type">
-    {types.map((t) => (
-      <button type="button" class="filter" data-type={t} aria-pressed={t === 'All' ? 'true' : 'false'}>
-        {t}
-      </button>
-    ))}
-  </div>
+  {sections.length === 0 && <p>No resources posted yet — check back soon.</p>}
 
-  <ul class="list">
-    {items.map((item) => (
-      <li class="row" data-type={item.type}>
-        <span class="type">{item.type}</span>
-        <div class="details">
-          <h2><a href={item.href}>{item.title}</a></h2>
-          <p class="meta">
-            {dateFormatter.format(item.date)}
-            {item.tags.length > 0 && <> &middot; {item.tags.join(', ')}</>}
-          </p>
-          {item.description && <p>{item.description}</p>}
-        </div>
-      </li>
-    ))}
-  </ul>
-
-  {items.length === 0 && <p>No resources posted yet — check back soon.</p>}
+  {sections.map((section) => (
+    <section class="resource-section">
+      <h2>{section.section}</h2>
+      <ul class="file-list">
+        {section.files.map((file) => (
+          <li class="row">
+            <a href={`${base}resources/${section.sectionSlug}/${file.slug}`}>{file.title}</a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  ))}
 </Layout>
 
 <style>
-  .filters {
-    display: flex;
-    gap: var(--space-sm);
-    margin: var(--space-lg) 0;
-    flex-wrap: wrap;
+  .resource-section {
+    margin-top: var(--space-xl);
   }
 
-  .filter {
-    font-family: var(--font-body);
-    font-size: 0.9375rem;
-    background: none;
-    border: 1px solid var(--color-border);
-    color: var(--color-text);
-    padding: var(--space-xs) var(--space-md);
-    border-radius: 2px;
-    cursor: pointer;
+  .resource-section h2 {
+    margin-bottom: var(--space-sm);
   }
 
-  .filter[aria-pressed='true'] {
-    background: var(--color-ink);
-    border-color: var(--color-ink);
-    color: #fff;
-  }
-
-  .list {
+  .file-list {
     list-style: none;
     margin: 0;
     padding: 0;
   }
 
   .row {
-    display: flex;
-    gap: var(--space-lg);
-    padding: var(--space-lg) 0;
+    padding: var(--space-md) 0;
     border-top: 1px solid var(--color-border);
   }
 
@@ -120,40 +49,9 @@ const dateFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'n
     border-bottom: 1px solid var(--color-border);
   }
 
-  .row[hidden] {
-    display: none;
-  }
-
-  .type {
-    flex: 0 0 6rem;
+  .row a {
     font-family: var(--font-heading);
     font-weight: 600;
-    color: var(--color-muted);
-  }
-
-  .details h2 {
-    font-size: 1.25rem;
-    margin-bottom: var(--space-xs);
-  }
-
-  .meta {
-    color: var(--color-muted);
-    margin-bottom: var(--space-xs);
+    font-size: 1.0625rem;
   }
 </style>
-
-<script>
-  const buttons = document.querySelectorAll<HTMLButtonElement>('.filter');
-  const rows = document.querySelectorAll<HTMLLIElement>('.row');
-
-  buttons.forEach((button) => {
-    button.addEventListener('click', () => {
-      buttons.forEach((b) => b.setAttribute('aria-pressed', 'false'));
-      button.setAttribute('aria-pressed', 'true');
-      const type = button.dataset.type;
-      rows.forEach((row) => {
-        row.hidden = type !== 'All' && row.dataset.type !== type;
-      });
-    });
-  });
-</script>
