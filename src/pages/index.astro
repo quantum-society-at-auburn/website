@@ -6,14 +6,22 @@ import quantumComputer from '../assets/brand/Qcomputer.png';
 
 const base = import.meta.env.BASE_URL;
 
-const forms = await getCollection('forms');
+const schedule = await getCollection('schedule');
 
-const events = (await getCollection('schedule'))
+const upcoming = schedule
   .filter((event) => event.data.date instanceof Date && event.data.date.valueOf() >= Date.now())
   .sort((a, b) => (a.data.date as Date).valueOf() - (b.data.date as Date).valueOf())
   .slice(0, 3);
 
+const alwaysShow = schedule.filter((event) => typeof event.data.date === 'string');
+
+const events = [...upcoming, ...alwaysShow];
+
 const dateFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
+
+function formatDate(date: Date | string) {
+  return date instanceof Date ? dateFormatter.format(date) : date;
+}
 ---
 <Layout title="Quantum Society at Auburn">
   <section class="hero">
@@ -29,9 +37,15 @@ const dateFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'n
         </li>
         {events.map((event) => (
           <li class="mini-row">
-            <span class="mini-date">{dateFormatter.format(event.data.date)}</span>
+            <span class="mini-date">{formatDate(event.data.date)}</span>
             <div class="mini-details">
-              <h3>{event.data.eventName}</h3>
+              <h3>
+                {event.data.rsvpFormSlug ? (
+                  <a href={`${base}forms/${event.data.rsvpFormSlug}`}>{event.data.eventName}</a>
+                ) : (
+                  event.data.eventName
+                )}
+              </h3>
               <p class="mini-meta">{event.data.time} &middot; {event.data.location}</p>
             </div>
           </li>
@@ -56,17 +70,6 @@ const dateFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'n
     </div>
     <Image src={quantumComputer} alt="Illustration of a dilution refrigerator used in quantum computing" width={280} loading="eager" />
   </section>
-
-  {forms.length > 0 && (
-    <section class="forms-section">
-      <h2>Forms</h2>
-      <ul class="forms-list">
-        {forms.map((form) => (
-          <li><a href={`${base}forms/${form.id}`}>{form.data.title}</a></li>
-        ))}
-      </ul>
-    </section>
-  )}
 </Layout>
 
 <style>
@@ -165,21 +168,5 @@ const dateFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'n
     flex: 0 1 280px;
     height: auto;
     align-self: center;
-  }
-
-  .forms-section {
-    margin-top: var(--space-xl);
-    padding-top: var(--space-lg);
-    border-top: 1px solid var(--color-border);
-  }
-
-  .forms-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-
-  .forms-list li {
-    padding: var(--space-sm) 0;
   }
 </style>

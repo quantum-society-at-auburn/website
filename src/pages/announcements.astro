@@ -3,7 +3,6 @@ import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
 
 const base = import.meta.env.BASE_URL;
-const forms = await getCollection('forms');
 
 const dateFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
 
@@ -28,7 +27,13 @@ const events = (await getCollection('schedule')).sort(
       <li class="row">
         <span class="date">{formatDate(event.data.date)}</span>
         <div class="details">
-          <h2>{event.data.eventName}</h2>
+          <h2>
+            {event.data.rsvpFormSlug ? (
+              <a href={`${base}forms/${event.data.rsvpFormSlug}`}>{event.data.eventName}</a>
+            ) : (
+              event.data.eventName
+            )}
+          </h2>
           <p class="meta">{event.data.time} &middot; {event.data.location}</p>
           {event.data.description && <p>{event.data.description}</p>}
         </div>
@@ -37,36 +42,9 @@ const events = (await getCollection('schedule')).sort(
   </ul>
 
   {events.length === 0 && <p>No announcements yet — check back soon.</p>}
-
-  {forms.length > 0 && (
-    <section class="forms-section">
-      <h2>Forms</h2>
-      <ul class="forms-list">
-        {forms.map((form) => (
-          <li><a href={`${base}forms/${form.id}`}>{form.data.title}</a></li>
-        ))}
-      </ul>
-    </section>
-  )}
 </Layout>
 
 <style>
-  .forms-section {
-    margin-top: var(--space-xl);
-    padding-top: var(--space-lg);
-    border-top: 1px solid var(--color-border);
-  }
-
-  .forms-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-
-  .forms-list li {
-    padding: var(--space-sm) 0;
-  }
-
   .schedule {
     list-style: none;
     margin: var(--space-lg) 0 0;
