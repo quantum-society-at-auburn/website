@@ -118,6 +118,12 @@
 html {
   height: 100%;
   overflow-x: hidden;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* legacy Edge/IE */
+}
+
+html::-webkit-scrollbar {
+  display: none; /* Chromium/Safari */
 }
 
 body {
