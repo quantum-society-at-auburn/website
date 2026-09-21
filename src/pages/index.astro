@@ -68,7 +68,9 @@ function formatDate(date: Date | string) {
         <a href={`${base}contact`}>Get in touch</a>
       </p>
     </div>
-    <Image src={quantumComputer} alt="Illustration of a dilution refrigerator used in quantum computing" width={280} loading="eager" />
+    <div class="hero-visual">
+      <Image src={quantumComputer} alt="Illustration of a dilution refrigerator used in quantum computing" width={280} loading="eager" />
+    </div>
   </section>
 </Layout>
 
@@ -87,6 +89,7 @@ function formatDate(date: Date | string) {
 
   .hero-text {
     flex: 1 1 300px;
+    max-width: 560px;
     align-self: center;
   }
 
@@ -164,9 +167,15 @@ function formatDate(date: Date | string) {
     flex-wrap: wrap;
   }
 
-  .hero img {
-    flex: 0 1 280px;
-    height: auto;
+  .hero-visual {
+    flex: 1 1 280px;
+    display: flex;
+    justify-content: center;
     align-self: center;
+  }
+
+  .hero img {
+    width: 280px;
+    height: auto;
   }
 </style>
