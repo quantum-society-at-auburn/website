@@ -1,6 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { getResourceSections } from '../lib/resources';
+import { getResourceSections, groupFilesByCategory } from '../lib/resources';
 
 const base = import.meta.env.BASE_URL;
 const sections = getResourceSections();
@@ -14,13 +14,50 @@ const dateFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'n
   {sections.length === 0 && <p>Nothing yet, check again soon</p>}
 
   <div class="resource-grid">
-    {sections.map((section) => (
-      <a class="resource-card" href={`${base}resources/${section.sectionSlug}`}>
-        <h2>{section.title}</h2>
-        {section.date && <p class="card-date">{dateFormatter.format(section.date)}</p>}
-        {section.description && <p class="card-description">{section.description}</p>}
-      </a>
-    ))}
+    {sections.map((section) => {
+      const groups = groupFilesByCategory(section.files);
+      return (
+        <details class="resource-card">
+          <summary>
+            <h2>{section.title}</h2>
+            {section.date && <p class="card-date">{dateFormatter.format(section.date)}</p>}
+            {section.description && <p class="card-description">{section.description}</p>}
+          </summary>
+          <div class="card-content">
+            {groups.map((group) => (
+              <div class="category-group">
+                <h3>{group.label}</h3>
+                <ul class="file-list">
+                  {group.files.map((file) => (
+                    <li class="row">
+                      <a href={`${base}resources/${section.sectionSlug}/${file.slug}`}>{file.title}</a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+
+            {section.links.length > 0 && (
+              <div class="category-group">
+                <h3>Links</h3>
+                <ul class="file-list">
+                  {section.links.map((link) => (
+                    <li class="row">
+                      <a href={link.url} target="_blank" rel="noopener noreferrer">{link.name}</a>
+                      {link.description && <p class="link-desc">{link.description}</p>}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {groups.length === 0 && section.links.length === 0 && (
+              <p class="empty-note">Nothing here yet.</p>
+            )}
+          </div>
+        </details>
+      );
+    })}
   </div>
 </Layout>
 
@@ -30,24 +67,51 @@ const dateFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'n
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: var(--space-lg);
     margin-top: var(--space-xl);
+    align-items: start;
   }
 
   .resource-card {
-    display: block;
     border: 1px solid var(--color-border);
     border-radius: 4px;
     padding: var(--space-md);
-    color: var(--color-text);
-    text-decoration: none;
   }
 
-  .resource-card:hover {
-    border-color: var(--color-accent);
+  .resource-card[open] {
+    grid-column: 1 / -1;
+  }
+
+  .resource-card summary {
+    cursor: pointer;
+    list-style: none;
+    position: relative;
+    padding-right: var(--space-lg);
+  }
+
+  .resource-card summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .resource-card summary::after {
+    content: '+';
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-family: var(--font-heading);
+    font-size: 1.25rem;
+    color: var(--color-muted);
+  }
+
+  .resource-card[open] summary::after {
+    content: '\2212';
+  }
+
+  .resource-card summary:hover h2 {
+    color: var(--color-link-hover);
   }
 
   .resource-card h2 {
+    display: inline;
     font-size: 1.1875rem;
-    margin-bottom: var(--space-xs);
   }
 
   .card-date {
@@ -55,6 +119,7 @@ const dateFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'n
     font-weight: 600;
     font-size: 0.8125rem;
     color: var(--color-muted);
+    margin-top: var(--space-xs);
     margin-bottom: var(--space-sm);
   }
 
@@ -62,5 +127,60 @@ const dateFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'n
     color: var(--color-muted);
     font-size: 0.9375rem;
     margin-bottom: 0;
+  }
+
+  .card-content {
+    margin-top: var(--space-md);
+  }
+
+  .empty-note {
+    color: var(--color-muted);
+    margin-top: var(--space-md);
+    margin-bottom: 0;
+  }
+
+  .category-group {
+    margin-top: var(--space-lg);
+  }
+
+  .category-group:first-child {
+    margin-top: var(--space-md);
+  }
+
+  .category-group h3 {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-muted);
+    margin-bottom: var(--space-xs);
+  }
+
+  .file-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .row {
+    padding: var(--space-md) 0;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .row:last-child {
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .row a {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 1.0625rem;
+  }
+
+  .link-desc {
+    margin: var(--space-xs) 0 0;
+    color: var(--color-muted);
+    font-size: 0.9375rem;
   }
 </style>
