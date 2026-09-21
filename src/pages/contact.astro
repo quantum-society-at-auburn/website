@@ -3,7 +3,6 @@ import { getCollection } from 'astro:content';
 import { Image } from 'astro:assets';
 import QRCode from 'qrcode';
 import Layout from '../layouts/Layout.astro';
-import logo from '../assets/brand/QSA_Logo_with_text.png';
 import auLogo from '../assets/brand/AU_logo.svg';
 import {
   AU_INVOLVE_URL,
@@ -89,7 +88,6 @@ const qrSvg = await QRCode.toString(GROUPME_URL, {
 
     <div class="column contact-column">
       <h1>Contact</h1>
-      <Image src={logo} alt="Quantum Society at Auburn" width={220} class="logo" />
 
       <div class="socials">
         {socials.map((social) => (
