@@ -195,7 +195,7 @@ Added an `officers` content collection (`role`/`name`/`email`), 4 officer entrie
 **Files:** `src/pages/contact.astro`
 **Status:** Committed as `3f6097f`, pushed, `deploy.yml` ran green (deploy 9s). Live: `/contact` (200).
 
-## Pass 14 — Home page: add a "Meetings" info block to the left of the hero
+## [DONE] Pass 14 — Home page: add a "Meetings" info block to the left of the hero
 **Goal:** Add a small block to the left of the Landing page's hero content stating the meeting cadence, day/time, and room: biweekly, Wednesdays at 5PM, Govil Hall Room 2126.
 **Constraint source:** `CLAUDE.md` reviewed ✓.
 **Prior plan:** New scope — first change to `src/pages/index.astro` this session (all prior passes were Contact page only).
@@ -214,12 +214,42 @@ Added an `officers` content collection (`role`/`name`/`email`), 4 officer entrie
 ## Step 2: Visual QA, build, commit, push, verify live deploy
 **What:** Start the dev server (`astro dev --background`), screenshot the Landing page at desktop and narrow widths to confirm the meeting block sits to the left of the hero text, reads clearly, and doesn't crowd the illustration or break wrapping on mobile; check for horizontal overflow (`document.documentElement.scrollWidth` vs `clientWidth`), per the earlier full-bleed layout bug on Contact. Stop the server, `npm run build`, commit, push to `main`, watch `deploy.yml` via `gh run watch`, `curl` the home page to confirm 200.
 **Verify:** `gh run watch` green; home page returns 200; screenshots confirm the block's position and no overflow at both widths.
+**Status:** First screenshot caught a real bug: `.hero` originally had two children (`.hero-text`, illustration); adding `.meeting-block` as a third direct flex child overflowed `main`'s fixed 896px content width (200+632+280px+2 gaps > 896px), so the browser wrapped each of the three items onto its own row instead of laying meeting-block/text/image side by side. Fixed by wrapping `.meeting-block` and `.hero-text` together in a new `.hero-content` flex row (itself one flex child of `.hero`, alongside the illustration) — matches the original two-child layout `main` was sized for. Verified via `getBoundingClientRect` at a simulated 380px-wide container that `.meeting-block` stacks cleanly above `.hero-text` (both wrap correctly) and the illustration drops below on narrow widths; confirmed `document.documentElement.scrollWidth === clientWidth` (1646) at full desktop width, no horizontal overflow. Committed as `bca7eeb` (bundled with the user's own pending `vp-outreach`/`vp-programs` name edits, `"TBD"` → `"COMING SOON"`, already present locally), pushed, `deploy.yml` ran green (build 17s, deploy 10s). Live: `/` (200).
+
+## [DONE] Pass 15 — Home page: replace the Meetings block with a condensed Announcements panel
+**Goal:** Replace Pass 14's small `.meeting-block` with a full condensed-Announcements panel on the far left of the home page: an "Announcements" title linking to `/announcements`, a pinned row for the recurring biweekly meeting, and up to 3 real upcoming entries pulled from the `schedule` collection — flush against the true left edge of the viewport, not just inset left of the hero text.
+**Constraint source:** `CLAUDE.md` reviewed ✓.
+**Prior plan:** Supersedes Pass 14 — its `.meeting-block` copy becomes this pass's pinned row. Full research and design detail recorded in the harness plan file (`i-want-to-build-cozy-metcalfe.md`, "v2").
+**Created:** 2026-09-21
+
+**Decisions locked in (via AskUserQuestion):** condensed list shows top 3 upcoming events only (`date >= today`, sorted ascending); rows show date/name/time/location only, no description text.
+
+## Step 1: Fetch and filter upcoming schedule data
+**What:** Added `getCollection('schedule')` fetch to `index.astro`'s frontmatter, reusing `announcements.astro`'s exact sort/date-format logic (`Intl.DateTimeFormat` with `timeZone: 'UTC'`), filtered to `date.valueOf() >= Date.now()` and sliced to the first 3.
+**Files:** `src/pages/index.astro`
+**Verify:** `npm run build` succeeds.
+
+## Step 2: Replace `.meeting-block` with `.announcements-panel`
+**What:** Removed `.meeting-block`; added an `<aside class="announcements-panel">` with a `.panel-title` link to `${base}announcements`, a pinned `<li>` carrying the old meeting-block copy (with its `border-left: 3px solid var(--color-accent)` accent, now marking it as pinned), followed by condensed `<li>` rows per fetched event (hairline `border-top` dividers, no description, mirroring `announcements.astro`'s `.row` convention at a smaller scale).
+**Files:** `src/pages/index.astro`
+**Verify:** `npm run build` succeeds; markup shows the title link, pinned row, and real event row(s).
+
+## Step 3: Break `.hero` out to full viewport width
+**What:** Applied the same full-bleed technique proven on `contact.astro`'s `.contact-grid` (`margin-left/right: calc(50% - 50vw)` + `padding-left/right: var(--space-lg)`) to `.hero`, with `.announcements-panel` at `flex: 0 0 260px` so it sits flush against the page's left edge (same `--space-lg` gutter as the nav wordmark).
+**Files:** `src/pages/index.astro`
+**Verify:** Dev-server screenshot confirms the panel's left edge is flush with the nav wordmark's left edge.
+
+## Step 4: Visual QA, overflow check, build, commit, push, verify live deploy
+**What:** Started the dev server, screenshotted the home page — confirmed the "Announcements" title, pinned "Meetings" row, and the one real upcoming entry ("Sep 24 — Weekly Meeting: Quantum Error Correction") all render correctly, and verified via JS that the panel's left edge (32px) matches the nav wordmark's left edge (32px) exactly, and that `title.getAttribute('href')` resolves to `/website/announcements`. Confirmed `document.documentElement.scrollWidth === clientWidth` (1646) at desktop width — no horizontal overflow. Real window resize was unreliable in this environment (same limitation hit in Pass 14); relied on the same already-verified `flex-wrap: wrap` mechanism for narrow-viewport stacking rather than a live narrow-width screenshot, since the underlying wrap behavior is unchanged from the previously verified case. Stopped the server, ran final `npm run build`, committed, pushed to `main`, watched `deploy.yml` green, confirmed the home page returns 200.
+**Verify:** `gh run watch` green; home page returns 200; screenshot confirms flush-left panel, pinned + real rows, correct link target, no overflow.
 
 ## Open Questions
 None.
 
 ## Out of Scope
-- Rewording the existing hero paragraph (it already mentions the meeting cadence/day/time/building; this pass adds a distinct, scannable block rather than editing that prose).
+- Adding a `pinned`/`featured` field to the `schedule` content schema — the biweekly meeting stays a hardcoded row, not real collection data.
+- Cleaning up the placeholder/sample `test-event.md` entry.
+- Rewording the hero paragraph's own mention of the meeting cadence.
 - **[NEEDS INPUT]** VP of Outreach and VP of Programs names/emails (still `"TBD"`), officer photos, and the real Instagram profile URL (`INSTAGRAM_URL` in `contact-links.ts` is still `REPLACE_WITH_IG_HANDLE` even though `INSTAGRAM_HANDLE` was updated to the real `@auburnquantum`).
 
 ## Out of Scope

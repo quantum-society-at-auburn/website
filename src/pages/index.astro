@@ -1,33 +1,56 @@
 ---
 import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
 import quantumComputer from '../assets/brand/Qcomputer.png';
 
 const base = import.meta.env.BASE_URL;
+
+const events = (await getCollection('schedule'))
+  .filter((event) => event.data.date.valueOf() >= Date.now())
+  .sort((a, b) => a.data.date.valueOf() - b.data.date.valueOf())
+  .slice(0, 3);
+
+const dateFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
 ---
 <Layout title="Quantum Society at Auburn">
   <section class="hero">
-    <div class="hero-content">
-      <div class="meeting-block">
-        <p class="meeting-label">Meetings</p>
-        <p class="meeting-detail">Biweekly &middot; Wednesdays, 5:00 PM</p>
-        <p class="meeting-detail">Govil Hall, Room 2126</p>
-      </div>
-      <div class="hero-text">
-        <h1>Welcome!</h1>
-        <p>
-          The Quantum Society at Auburn is a Auburn's only club dedicated to fostering a community around curiosity in quantum sciences.
-          Founded this semester, our goal is to build a community and interest in learning about applications of quantum physics, from
-          computing to sensing. Our meetings are biweekly, Wednesdays at 5PM in the brand new Govil Hall (Stem+Ag Building A), where we
-          host workshops teaching people about the fundamentals of quantum computing. We also host a competitive hackathon team, where we'll
-          have practices and compete in virtual and in-person quantum hackathons.
-        </p>
-        <p class="links">
-          <a class="button" href={`${base}resources`}>Browse resources</a>
-          <a href={`${base}announcements`}>See upcoming meetings</a>
-          <a href={`${base}contact`}>Get in touch</a>
-        </p>
-      </div>
+    <aside class="announcements-panel">
+      <a class="panel-title" href={`${base}announcements`}>Announcements</a>
+      <ul class="mini-schedule">
+        <li class="mini-row pinned">
+          <span class="mini-date">Biweekly</span>
+          <div class="mini-details">
+            <h3>Meetings</h3>
+            <p class="mini-meta">Wednesdays, 5:00 PM &middot; Govil Hall, Room 2126</p>
+          </div>
+        </li>
+        {events.map((event) => (
+          <li class="mini-row">
+            <span class="mini-date">{dateFormatter.format(event.data.date)}</span>
+            <div class="mini-details">
+              <h3>{event.data.eventName}</h3>
+              <p class="mini-meta">{event.data.time} &middot; {event.data.location}</p>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </aside>
+
+    <div class="hero-text">
+      <h1>Welcome!</h1>
+      <p>
+        The Quantum Society at Auburn is a Auburn's only club dedicated to fostering a community around curiosity in quantum sciences.
+        Founded this semester, our goal is to build a community and interest in learning about applications of quantum physics, from
+        computing to sensing. Our meetings are biweekly, Wednesdays at 5PM in the brand new Govil Hall (Stem+Ag Building A), where we
+        host workshops teaching people about the fundamentals of quantum computing. We also host a competitive hackathon team, where we'll
+        have practices and compete in virtual and in-person quantum hackathons.
+      </p>
+      <p class="links">
+        <a class="button" href={`${base}resources`}>Browse resources</a>
+        <a href={`${base}announcements`}>See upcoming meetings</a>
+        <a href={`${base}contact`}>Get in touch</a>
+      </p>
     </div>
     <Image src={quantumComputer} alt="Illustration of a dilution refrigerator used in quantum computing" width={280} loading="eager" />
   </section>
@@ -36,44 +59,80 @@ const base = import.meta.env.BASE_URL;
 <style>
   .hero {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: space-between;
     gap: var(--space-xl);
     flex-wrap: wrap;
-  }
-
-  .hero-content {
-    display: flex;
-    align-items: flex-start;
-    gap: var(--space-lg);
-    flex-wrap: wrap;
-    flex: 1 1 420px;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+    padding-left: var(--space-lg);
+    padding-right: var(--space-lg);
   }
 
   .hero-text {
     flex: 1 1 300px;
+    align-self: center;
   }
 
-  .meeting-block {
-    flex: 0 0 170px;
-    border-left: 3px solid var(--color-accent);
-    padding-left: var(--space-md);
+  .announcements-panel {
+    flex: 0 0 260px;
+    border-right: 1px solid var(--color-border);
+    padding-right: var(--space-lg);
   }
 
-  .meeting-label {
+  .panel-title {
+    display: block;
     font-family: var(--font-heading);
     font-weight: 600;
-    font-size: 1rem;
+    font-size: 1.125rem;
+    color: var(--color-text);
+    text-decoration: none;
+    margin-bottom: var(--space-md);
+  }
+
+  .panel-title:hover {
+    color: var(--color-link-hover);
+  }
+
+  .mini-schedule {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .mini-row {
+    padding: var(--space-sm) 0;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .mini-row:first-child {
+    border-top: none;
+  }
+
+  .mini-row.pinned {
+    border-top: none;
+    border-left: 3px solid var(--color-accent);
+    padding: var(--space-xs) 0 var(--space-sm) var(--space-sm);
+    margin-bottom: var(--space-sm);
+  }
+
+  .mini-date {
+    display: block;
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 0.8125rem;
+    color: var(--color-muted);
     margin-bottom: var(--space-xs);
   }
 
-  .meeting-detail {
-    color: var(--color-muted);
+  .mini-details h3 {
     font-size: 0.9375rem;
     margin-bottom: var(--space-xs);
   }
 
-  .meeting-detail:last-child {
+  .mini-meta {
+    color: var(--color-muted);
+    font-size: 0.8125rem;
     margin-bottom: 0;
   }
 
@@ -92,5 +151,6 @@ const base = import.meta.env.BASE_URL;
   .hero img {
     flex: 0 1 280px;
     height: auto;
+    align-self: center;
   }
 </style>
