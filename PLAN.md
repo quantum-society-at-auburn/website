@@ -338,7 +338,7 @@ None.
 ## Step 4: Visual QA, build, commit, push, verify live deploy
 **What:** Start the dev server, screenshot the Contact page to confirm Step 3's layout and that the Contact column (right side) is untouched; check for horizontal overflow (`document.documentElement.scrollWidth` vs `clientWidth`). Stop the server, `npm run build`, commit, push to `main`, watch `deploy.yml`, `curl` `/contact` to confirm 200.
 **Verify:** `gh run watch` green; `/contact` returns 200; screenshot confirms the centered 5th-officer row and unchanged 2×2/Contact column.
-**Status:** Screenshot confirmed the 2×2 (President/VP Operations/VP Outreach/VP Programs) renders unchanged, and VP of Treasury (initials fallback "CS", "COMING SOON", "VP of Treasury") renders in its own row below, centered under the full width of the Leadership column. Contact column untouched. No horizontal overflow (`scrollWidth === clientWidth`, 1631). Committed and pushed; `deploy.yml` verified green; live `/contact` returns 200.
+**Status:** Screenshot confirmed the 2×2 (President/VP Operations/VP Outreach/VP Programs) renders unchanged, and VP of Treasury (initials fallback "CS", "COMING SOON", "VP of Treasury") renders in its own row below, centered under the full width of the Leadership column. Contact column untouched. No horizontal overflow (`scrollWidth === clientWidth`, 1631). Committed as `2cf61cf`, pushed, `deploy.yml` ran green (deploy 9s). Live: `/contact` (200).
 
 ## Open Questions
 None.
