@@ -67,17 +67,12 @@ const dateFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'n
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: var(--space-lg);
     margin-top: var(--space-xl);
-    align-items: start;
   }
 
   .resource-card {
     border: 1px solid var(--color-border);
     border-radius: 4px;
     padding: var(--space-md);
-  }
-
-  .resource-card[open] {
-    grid-column: 1 / -1;
   }
 
   .resource-card summary {
@@ -131,6 +126,8 @@ const dateFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'n
 
   .card-content {
     margin-top: var(--space-md);
+    overflow: hidden;
+    transition: max-height 0.25s ease, opacity 0.2s ease;
   }
 
   .empty-note {
@@ -184,3 +181,70 @@ const dateFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'n
     font-size: 0.9375rem;
   }
 </style>
+
+<script>
+  function initResourceCard(details: HTMLDetailsElement) {
+    const summary = details.querySelector('summary');
+    const content = details.querySelector<HTMLElement>('.card-content');
+    if (!summary || !content) return;
+
+    let animating = false;
+
+    function openCard() {
+      details.open = true;
+      content!.style.maxHeight = '0px';
+      content!.style.opacity = '0';
+      // Force layout so the browser registers the collapsed state before
+      // animating to the target height, otherwise the transition is skipped.
+      content!.offsetHeight;
+      const targetHeight = content!.scrollHeight;
+      content!.style.maxHeight = `${targetHeight}px`;
+      content!.style.opacity = '1';
+      animating = true;
+      content!.addEventListener('transitionend', function onEnd(event) {
+        if (event.propertyName !== 'max-height') return;
+        content!.removeEventListener('transitionend', onEnd);
+        // Let the panel size naturally afterward (e.g. on viewport resize).
+        content!.style.maxHeight = 'none';
+        animating = false;
+      });
+    }
+
+    function closeCard() {
+      const startHeight = content!.scrollHeight;
+      content!.style.maxHeight = `${startHeight}px`;
+      content!.offsetHeight;
+      content!.style.maxHeight = '0px';
+      content!.style.opacity = '0';
+      animating = true;
+      content!.addEventListener('transitionend', function onEnd(event) {
+        if (event.propertyName !== 'max-height') return;
+        content!.removeEventListener('transitionend', onEnd);
+        details.open = false;
+        animating = false;
+      });
+    }
+
+    function toggle(event: Event) {
+      event.preventDefault();
+      if (animating) return;
+      if (details.open) {
+        closeCard();
+      } else {
+        openCard();
+      }
+    }
+
+    summary.addEventListener('click', toggle);
+    // Belt-and-suspenders: explicitly handle Enter/Space too, rather than
+    // relying on the browser synthesizing a 'click' from key activation.
+    // The `animating` guard above makes this safe even if both fire.
+    summary.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ' || event.key === 'Spacebar') {
+        toggle(event);
+      }
+    });
+  }
+
+  document.querySelectorAll<HTMLDetailsElement>('.resource-card').forEach(initResourceCard);
+</script>
