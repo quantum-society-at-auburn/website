@@ -1,0 +1,116 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import { getResourceSections, groupFilesByCategory } from '../../../lib/resources';
+import type { ResourceSection } from '../../../lib/resources';
+
+export async function getStaticPaths() {
+  const sections = getResourceSections();
+  return sections.map((section) => ({
+    params: { section: section.sectionSlug },
+    props: { section },
+  }));
+}
+
+interface Props {
+  section: ResourceSection;
+}
+
+const { section } = Astro.props;
+const base = import.meta.env.BASE_URL;
+
+const dateFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
+const groups = groupFilesByCategory(section.files);
+---
+<Layout title={`${section.title} — Quantum Society at Auburn`}>
+  <p class="breadcrumb"><a href={`${base}resources`}>Resources</a></p>
+  <h1>{section.title}</h1>
+  {section.date && <p class="date">{dateFormatter.format(section.date)}</p>}
+  {section.description && <p class="description">{section.description}</p>}
+
+  {groups.map((group) => (
+    <div class="category-group">
+      <h3>{group.label}</h3>
+      <ul class="file-list">
+        {group.files.map((file) => (
+          <li class="row">
+            <a href={`${base}resources/${section.sectionSlug}/${file.slug}`}>{file.title}</a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  ))}
+
+  {section.links.length > 0 && (
+    <div class="category-group">
+      <h3>Links</h3>
+      <ul class="file-list">
+        {section.links.map((link) => (
+          <li class="row">
+            <a href={link.url} target="_blank" rel="noopener noreferrer">{link.name}</a>
+            {link.description && <p class="link-desc">{link.description}</p>}
+          </li>
+        ))}
+      </ul>
+    </div>
+  )}
+</Layout>
+
+<style>
+  .breadcrumb {
+    color: var(--color-muted);
+    margin-bottom: var(--space-md);
+  }
+
+  .date {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--color-muted);
+    margin-bottom: var(--space-sm);
+  }
+
+  .description {
+    margin-bottom: var(--space-lg);
+  }
+
+  .category-group {
+    margin-top: var(--space-lg);
+  }
+
+  .category-group h3 {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-muted);
+    margin-bottom: var(--space-xs);
+  }
+
+  .file-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .row {
+    padding: var(--space-md) 0;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .row:last-child {
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .row a {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 1.0625rem;
+  }
+
+  .link-desc {
+    margin: var(--space-xs) 0 0;
+    color: var(--color-muted);
+    font-size: 0.9375rem;
+  }
+</style>

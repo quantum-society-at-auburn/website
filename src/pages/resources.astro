@@ -1,26 +1,11 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { getResourceSections, CATEGORY_LABELS } from '../lib/resources';
-import type { ResourceFile } from '../lib/resources';
+import { getResourceSections } from '../lib/resources';
 
 const base = import.meta.env.BASE_URL;
 const sections = getResourceSections();
 
-// section.files is already sorted by category (see getResourceSections), so
-// grouping just needs to split it into consecutive same-category runs.
-function groupByCategory(files: ResourceFile[]) {
-  const groups: { label: string; files: ResourceFile[] }[] = [];
-  for (const file of files) {
-    const last = groups[groups.length - 1];
-    const label = CATEGORY_LABELS[file.category];
-    if (last && last.label === label) {
-      last.files.push(file);
-    } else {
-      groups.push({ label, files: [file] });
-    }
-  }
-  return groups;
-}
+const dateFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
 ---
 <Layout title="Resources">
   <h1>Resources</h1>
@@ -28,79 +13,54 @@ function groupByCategory(files: ResourceFile[]) {
 
   {sections.length === 0 && <p>Nothing yet, check again soon</p>}
 
-  {sections.map((section) => (
-    <section class="resource-section">
-      <h2>{section.section}</h2>
-      {groupByCategory(section.files).map((group) => (
-        <div class="category-group">
-          <h3>{group.label}</h3>
-          <ul class="file-list">
-            {group.files.map((file) => (
-              <li class="row">
-                {file.kind === 'link' ? (
-                  <>
-                    <a href={file.url} target="_blank" rel="noopener noreferrer">{file.title}</a>
-                    {file.description && <p class="link-desc">{file.description}</p>}
-                  </>
-                ) : (
-                  <a href={`${base}resources/${section.sectionSlug}/${file.slug}`}>{file.title}</a>
-                )}
-              </li>
-            ))}
-          </ul>
-        </div>
-      ))}
-    </section>
-  ))}
+  <div class="resource-grid">
+    {sections.map((section) => (
+      <a class="resource-card" href={`${base}resources/${section.sectionSlug}`}>
+        <h2>{section.title}</h2>
+        {section.date && <p class="card-date">{dateFormatter.format(section.date)}</p>}
+        {section.description && <p class="card-description">{section.description}</p>}
+      </a>
+    ))}
+  </div>
 </Layout>
 
 <style>
-  .resource-section {
+  .resource-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--space-lg);
     margin-top: var(--space-xl);
   }
 
-  .resource-section h2 {
-    margin-bottom: var(--space-sm);
+  .resource-card {
+    display: block;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    padding: var(--space-md);
+    color: var(--color-text);
+    text-decoration: none;
   }
 
-  .category-group {
-    margin-top: var(--space-md);
+  .resource-card:hover {
+    border-color: var(--color-accent);
   }
 
-  .category-group h3 {
-    font-family: var(--font-heading);
-    font-weight: 600;
-    font-size: 0.875rem;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    color: var(--color-muted);
+  .resource-card h2 {
+    font-size: 1.1875rem;
     margin-bottom: var(--space-xs);
   }
 
-  .file-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-
-  .row {
-    padding: var(--space-md) 0;
-    border-top: 1px solid var(--color-border);
-  }
-
-  .row:last-child {
-    border-bottom: 1px solid var(--color-border);
-  }
-
-  .row a {
+  .card-date {
     font-family: var(--font-heading);
     font-weight: 600;
-    font-size: 1.0625rem;
+    font-size: 0.8125rem;
+    color: var(--color-muted);
+    margin-bottom: var(--space-sm);
   }
 
-  .link-desc {
-    margin: var(--space-xs) 0 0;
+  .card-description {
     color: var(--color-muted);
     font-size: 0.9375rem;
+    margin-bottom: 0;
   }
 </style>

@@ -6,12 +6,10 @@ import type { ResourceFile } from '../../../lib/resources';
 export async function getStaticPaths() {
   const sections = getResourceSections();
   return sections.flatMap((section) =>
-    section.files
-      .filter((file) => file.kind === 'file')
-      .map((file) => ({
-        params: { section: section.sectionSlug, file: file.slug },
-        props: { file, sectionTitle: section.section },
-      }))
+    section.files.map((file) => ({
+      params: { section: section.sectionSlug, file: file.slug },
+      props: { file, sectionTitle: section.title },
+    }))
   );
 }
 

@@ -1,3 +1,5 @@
+import yaml from 'js-yaml';
+
 export type Category =
   | 'slides'
   | 'pdf'
@@ -5,7 +7,6 @@ export type Category =
   | 'spreadsheet'
   | 'image'
   | 'notebook'
-  | 'link'
   | 'other';
 
 export const CATEGORY_ORDER: Category[] = [
@@ -15,7 +16,6 @@ export const CATEGORY_ORDER: Category[] = [
   'spreadsheet',
   'image',
   'notebook',
-  'link',
   'other',
 ];
 
@@ -26,7 +26,6 @@ export const CATEGORY_LABELS: Record<Category, string> = {
   spreadsheet: 'Spreadsheets',
   image: 'Images',
   notebook: 'Notebooks',
-  link: 'Links',
   other: 'Other Files',
 };
 
@@ -41,14 +40,18 @@ function categorizeExt(ext: string): Category {
 }
 
 export interface ResourceFile {
-  kind: 'file' | 'link';
   section: string;
   sectionSlug: string;
-  filename?: string;
+  filename: string;
   title: string;
   slug: string;
   ext: string;
   category: Category;
+  url: string;
+}
+
+export interface ResourceLink {
+  name: string;
   url: string;
   description?: string;
 }
@@ -56,6 +59,10 @@ export interface ResourceFile {
 export interface ResourceSection {
   section: string;
   sectionSlug: string;
+  title: string;
+  date?: Date;
+  description?: string;
+  links: ResourceLink[];
   files: ResourceFile[];
 }
 
@@ -97,28 +104,32 @@ const modules = import.meta.glob('/src/content/resources/**/*', {
   import: 'default',
 }) as Record<string, string>;
 
-// links.md is a control file (parsed separately below), not a downloadable
-// resource itself, even though the glob above matches it like any other file.
-const LINKS_FILENAME = 'links.md';
+// info.md is a control file (parsed separately below as YAML), not a
+// downloadable resource itself, even though the glob above matches it.
+const INFO_FILENAME = 'info.md';
+
+function sectionFromPath(prefix: string, path: string): string | undefined {
+  if (!path.startsWith(prefix)) return undefined;
+  const rest = path.slice(prefix.length);
+  const segments = rest.split('/');
+  if (segments.length !== 2) return undefined; // exactly one folder level deep is supported
+  return segments[0];
+}
 
 function parseModules(): ResourceFile[] {
   const prefix = '/src/content/resources/';
   const files: ResourceFile[] = [];
 
   for (const [path, url] of Object.entries(modules)) {
-    if (!path.startsWith(prefix)) continue;
-    const rest = path.slice(prefix.length);
-    const segments = rest.split('/');
-    if (segments.length !== 2) continue; // exactly one folder level deep is supported
-
-    const [section, filename] = segments;
-    if (filename === LINKS_FILENAME) continue;
+    const section = sectionFromPath(prefix, path);
+    if (!section) continue;
+    const filename = path.slice(prefix.length + section.length + 1);
+    if (filename === INFO_FILENAME) continue;
 
     const extMatch = filename.match(/\.[^./]+$/);
     const ext = extMatch ? extMatch[0].toLowerCase() : '';
 
     files.push({
-      kind: 'file',
       section,
       sectionSlug: slugify(section),
       filename,
@@ -133,71 +144,139 @@ function parseModules(): ResourceFile[] {
   return files;
 }
 
-// Raw text of every per-folder links.md, so its lines can be parsed into
-// link entries below (a `?url` import wouldn't give us the file's contents).
-const linkModules = import.meta.glob('/src/content/resources/**/links.md', {
+// Raw text of every per-folder info.md, so its YAML frontmatter can be parsed below.
+const infoModules = import.meta.glob('/src/content/resources/**/info.md', {
   eager: true,
   query: '?raw',
   import: 'default',
 }) as Record<string, string>;
 
-// Awesome-list-style bullet: "- [Title](https://url) - Description" (description optional).
-const LINK_LINE_PATTERN = /^-\s*\[([^\]]+)\]\((\S+)\)(?:\s+-\s+(.+))?\s*$/;
+const FRONTMATTER_PATTERN = /^---\r?\n([\s\S]*?)\r?\n---\s*\r?\n?/;
 
-function parseLinkModules(): ResourceFile[] {
-  const prefix = '/src/content/resources/';
-  const entries: ResourceFile[] = [];
+interface ParsedInfo {
+  title?: string;
+  date?: Date;
+  description?: string;
+  links: ResourceLink[];
+}
 
-  for (const [path, content] of Object.entries(linkModules)) {
-    if (!path.startsWith(prefix)) continue;
-    const rest = path.slice(prefix.length);
-    const segments = rest.split('/');
-    if (segments.length !== 2) continue; // exactly one folder level deep is supported
+function parseInfoFile(path: string, content: string): ParsedInfo {
+  const empty: ParsedInfo = { links: [] };
 
-    const [section] = segments;
+  const match = content.match(FRONTMATTER_PATTERN);
+  if (!match) {
+    console.warn(`[resources] No YAML frontmatter found in ${path}`);
+    return empty;
+  }
 
-    for (const rawLine of content.split(/\r?\n/)) {
-      const line = rawLine.trim();
-      if (!line || line.startsWith('#')) continue;
+  let doc: unknown;
+  try {
+    doc = yaml.load(match[1]);
+  } catch (err) {
+    console.warn(`[resources] Failed to parse YAML in ${path}: ${(err as Error).message}`);
+    return empty;
+  }
 
-      const match = line.match(LINK_LINE_PATTERN);
-      if (!match) {
-        console.warn(`[resources] Skipping unrecognized line in ${path}: "${line}"`);
-        continue;
+  if (typeof doc !== 'object' || doc === null) return empty;
+  const data = doc as Record<string, unknown>;
+
+  const title = typeof data.title === 'string' ? data.title : undefined;
+  const date = data.date instanceof Date ? data.date : undefined;
+  const description = typeof data.description === 'string' ? data.description : undefined;
+
+  const links: ResourceLink[] = [];
+  if (Array.isArray(data.links)) {
+    for (const entry of data.links) {
+      if (
+        typeof entry === 'object' &&
+        entry !== null &&
+        typeof (entry as Record<string, unknown>).name === 'string' &&
+        typeof (entry as Record<string, unknown>).url === 'string'
+      ) {
+        const e = entry as Record<string, unknown>;
+        links.push({
+          name: e.name as string,
+          url: e.url as string,
+          description: typeof e.description === 'string' ? e.description : undefined,
+        });
+      } else {
+        console.warn(`[resources] Skipping malformed link entry in ${path}: ${JSON.stringify(entry)}`);
       }
-
-      const [, title, url, description] = match;
-      entries.push({
-        kind: 'link',
-        section,
-        sectionSlug: slugify(section),
-        title,
-        slug: slugify(title),
-        ext: '',
-        category: 'link',
-        url,
-        description,
-      });
     }
   }
 
-  return entries;
+  return { title, date, description, links };
+}
+
+function getInfoBySection(): Map<string, ParsedInfo> {
+  const prefix = '/src/content/resources/';
+  const bySection = new Map<string, ParsedInfo>();
+
+  for (const [path, content] of Object.entries(infoModules)) {
+    const section = sectionFromPath(prefix, path);
+    if (!section) continue;
+    bySection.set(slugify(section), parseInfoFile(path, content));
+  }
+
+  return bySection;
+}
+
+// section.files is already sorted by category (see getResourceSections), so
+// grouping just needs to split it into consecutive same-category runs.
+export function groupFilesByCategory(files: ResourceFile[]) {
+  const groups: { label: string; files: ResourceFile[] }[] = [];
+  for (const file of files) {
+    const last = groups[groups.length - 1];
+    const label = CATEGORY_LABELS[file.category];
+    if (last && last.label === label) {
+      last.files.push(file);
+    } else {
+      groups.push({ label, files: [file] });
+    }
+  }
+  return groups;
 }
 
 export function getResourceSections(): ResourceSection[] {
   const bySection = new Map<string, ResourceSection>();
+  const infoBySection = getInfoBySection();
 
-  for (const file of [...parseModules(), ...parseLinkModules()]) {
-    let section = bySection.get(file.sectionSlug);
-    if (!section) {
-      section = { section: file.section, sectionSlug: file.sectionSlug, files: [] };
-      bySection.set(file.sectionSlug, section);
+  function getOrCreate(section: string, sectionSlug: string): ResourceSection {
+    let entry = bySection.get(sectionSlug);
+    if (!entry) {
+      const info = infoBySection.get(sectionSlug);
+      entry = {
+        section,
+        sectionSlug,
+        title: info?.title ?? section,
+        date: info?.date,
+        description: info?.description,
+        links: info?.links ?? [],
+        files: [],
+      };
+      bySection.set(sectionSlug, entry);
     }
-    section.files.push(file);
+    return entry;
+  }
+
+  for (const file of parseModules()) {
+    getOrCreate(file.section, file.sectionSlug).files.push(file);
+  }
+
+  // Folders that only have an info.md (no files yet) still get a section.
+  const prefix = '/src/content/resources/';
+  for (const path of Object.keys(infoModules)) {
+    const section = sectionFromPath(prefix, path);
+    if (section) getOrCreate(section, slugify(section));
   }
 
   const sections = [...bySection.values()];
-  sections.sort((a, b) => collator.compare(a.section, b.section));
+  sections.sort((a, b) => {
+    if (a.date && b.date) return b.date.valueOf() - a.date.valueOf();
+    if (a.date && !b.date) return -1;
+    if (!a.date && b.date) return 1;
+    return collator.compare(a.title, b.title);
+  });
   for (const section of sections) {
     section.files.sort((a, b) => {
       const categoryDiff = CATEGORY_ORDER.indexOf(a.category) - CATEGORY_ORDER.indexOf(b.category);
@@ -214,5 +293,5 @@ export function findResourceFile(
 ): { file: ResourceFile; sectionTitle: string } | undefined {
   const section = getResourceSections().find((s) => s.sectionSlug === sectionSlug);
   const file = section?.files.find((f) => f.slug === fileSlug);
-  return section && file ? { file, sectionTitle: section.section } : undefined;
+  return section && file ? { file, sectionTitle: section.title } : undefined;
 }
