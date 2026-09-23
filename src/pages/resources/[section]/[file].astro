@@ -31,7 +31,10 @@ const isOffice = OFFICE_EXTS.includes(file.ext);
 const absoluteUrl = new URL(file.url, Astro.site);
 const officeViewerUrl = `https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(absoluteUrl.href)}`;
 ---
-<Layout title={`${file.title} — Quantum Society at Auburn`}>
+<Layout
+  title={file.title}
+  description={`${file.title} from ${sectionTitle}, a Quantum Society at Auburn workshop.`}
+>
   <p class="breadcrumb"><a href={`${base}resources`}>Resources</a> / {sectionTitle}</p>
   <h1>{file.title}</h1>
 

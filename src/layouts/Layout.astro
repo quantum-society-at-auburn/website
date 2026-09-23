@@ -1,23 +1,53 @@
 ---
 import '../styles/global.css';
 import { getImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import qMark from '../assets/brand/Q_bg.png';
+import logoWithText from '../assets/brand/QSA_Logo_with_text.png';
+
+const SITE_NAME = 'Quantum Society at Auburn';
+const DEFAULT_DESCRIPTION =
+  "Quantum Society at Auburn (QSA) is Auburn University's quantum computing club: biweekly workshops, quantum hackathons, and a community for anyone curious about quantum.";
 
 interface Props {
   title: string;
+  description?: string;
+  /** Use `title` as-is instead of appending the site name. */
+  fullTitle?: boolean;
+  noindex?: boolean;
+  image?: ImageMetadata;
 }
 
-const { title } = Astro.props;
+const { title, description = DEFAULT_DESCRIPTION, fullTitle = false, noindex = false, image = logoWithText } = Astro.props;
+const pageTitle = fullTitle ? title : `${title} | ${SITE_NAME}`;
+const canonical = new URL(Astro.url.pathname, Astro.site);
 const favicon = await getImage({ src: qMark, width: 64, height: 64, format: 'png' });
+const ogImage = await getImage({ src: image, width: 600, format: 'png' });
+const ogImageUrl = new URL(ogImage.src, Astro.site);
 ---
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <link rel="icon" type="image/png" href={favicon.src} />
-    <meta name="viewport" content="width=device-width" />
-    <title>{title}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <meta name="google-site-verification" content="H0PW-oUWkCw8ja0NUQG1beDzC1y0-UsWv4E8wwe7tUI" />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <link rel="sitemap" href={`${import.meta.env.BASE_URL}sitemap-index.xml`} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SITE_NAME} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta name="twitter:card" content="summary" />
+
+    <slot name="head" />
   </head>
   <body>
     <Nav />

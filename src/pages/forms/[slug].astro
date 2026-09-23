@@ -13,7 +13,7 @@ export async function getStaticPaths() {
 
 const { entry } = Astro.props;
 ---
-<Layout title={`${entry.data.title} — Quantum Society at Auburn`}>
+<Layout title={entry.data.title} description={entry.data.description}>
   <h1>{entry.data.title}</h1>
   {entry.data.description && <p>{entry.data.description}</p>}
   <FormEmbed entry={entry} />

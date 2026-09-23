@@ -18,7 +18,10 @@ const events = (await getCollection('schedule'))
   .sort((a, b) => sortTime(a.data.date) - sortTime(b.data.date))
   .reverse();
 ---
-<Layout title="Announcements — Quantum Society at Auburn">
+<Layout
+  title="Announcements"
+  description="Upcoming Quantum Society at Auburn meetings, workshops, and events at Auburn University."
+>
   <h1>Announcements</h1>
   <p>Upcoming meetings and events.</p>
 

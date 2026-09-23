@@ -1,8 +1,10 @@
 ---
-import { Image } from 'astro:assets';
+import { Image, getImage } from 'astro:assets';
 import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
 import quantumComputer from '../assets/brand/Qcomputer.png';
+import logoWithText from '../assets/brand/QSA_Logo_with_text.png';
+import { AU_INVOLVE_URL, INSTAGRAM_URL, LINKEDIN_URL } from '../data/contact-links';
 
 const base = import.meta.env.BASE_URL;
 
@@ -22,8 +24,22 @@ const dateFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'n
 function formatDate(date: Date | string) {
   return date instanceof Date ? dateFormatter.format(date) : date;
 }
+
+const logo = await getImage({ src: logoWithText, width: 600, format: 'png' });
+const organization = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'Quantum Society at Auburn',
+  alternateName: ['QSA', 'Auburn Quantum Club', 'Quantum Club at Auburn'],
+  url: new URL(base, Astro.site).href,
+  logo: new URL(logo.src, Astro.site).href,
+  description: "Auburn University's quantum computing club.",
+  parentOrganization: { '@type': 'CollegeOrUniversity', name: 'Auburn University' },
+  sameAs: [LINKEDIN_URL, INSTAGRAM_URL, AU_INVOLVE_URL],
+};
 ---
-<Layout title="Quantum Society at Auburn">
+<Layout title="Quantum Society at Auburn | Quantum Computing Club at Auburn University" fullTitle>
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(organization)} />
   <section class="hero">
     <aside class="announcements-panel">
       <a class="panel-title" href={`${base}announcements`}>Announcements</a>
@@ -54,9 +70,10 @@ function formatDate(date: Date | string) {
     </aside>
 
     <div class="hero-text">
-      <h1>Welcome!</h1>
+      <p class="eyebrow">Welcome!</p>
+      <h1>Quantum Society at Auburn</h1>
       <p>
-        The Quantum Society at Auburn is a Auburn's only club dedicated to fostering a community around curiosity in quantum sciences.
+        The Quantum Society at Auburn (QSA) is Auburn University's quantum computing club, a community for anyone curious about quantum science.
         Founded this semester, our goal is to build a community and interest in learning about applications of quantum physics, from
         computing to sensing. Our meetings are biweekly, Wednesdays at 5PM in the brand new Govil Hall (Stem+Ag Building A), where we
         host workshops teaching people about the fundamentals of quantum computing. We also host a competitive hackathon team, where we'll
@@ -91,6 +108,12 @@ function formatDate(date: Date | string) {
     flex: 1 1 300px;
     max-width: 560px;
     align-self: center;
+  }
+
+  .eyebrow {
+    margin: 0;
+    color: var(--color-muted);
+    font-weight: 600;
   }
 
   .announcements-panel {
