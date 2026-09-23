@@ -1,4 +1,5 @@
 import yaml from 'js-yaml';
+import additionalRaw from '/src/data/additional-resources.md?raw';
 
 export type Category =
   | 'slides'
@@ -294,4 +295,10 @@ export function findResourceFile(
   const section = getResourceSections().find((s) => s.sectionSlug === sectionSlug);
   const file = section?.files.find((f) => f.slug === fileSlug);
   return section && file ? { file, sectionTitle: section.title } : undefined;
+}
+
+// Outside links listed in src/data/additional-resources.md, using the same
+// `links:` frontmatter format as the per-meeting info.md files.
+export function getAdditionalResources(): ResourceLink[] {
+  return parseInfoFile('src/data/additional-resources.md', additionalRaw).links;
 }

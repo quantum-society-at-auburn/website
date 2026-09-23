@@ -1,9 +1,10 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { getResourceSections, groupFilesByCategory } from '../lib/resources';
+import { getAdditionalResources, getResourceSections, groupFilesByCategory } from '../lib/resources';
 
 const base = import.meta.env.BASE_URL;
 const sections = getResourceSections();
+const additionalResources = getAdditionalResources();
 
 const dateFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
 ---
@@ -62,6 +63,21 @@ const dateFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'n
       );
     })}
   </div>
+
+  {additionalResources.length > 0 && (
+    <section class="additional-resources">
+      <h2>Additional Resources</h2>
+      <p class="additional-intro">Other places to learn quantum computing</p>
+      <ul class="file-list additional-list">
+        {additionalResources.map((link) => (
+          <li class="row">
+            <a href={link.url} target="_blank" rel="noopener noreferrer">{link.name}</a>
+            {link.description && <p class="link-desc">{link.description}</p>}
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
 </Layout>
 
 <style>
@@ -201,6 +217,30 @@ const dateFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'n
     margin: var(--space-xs) 0 0;
     color: var(--color-muted);
     font-size: 0.9375rem;
+  }
+
+  .additional-resources {
+    margin-top: calc(var(--space-xl) * 2);
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+    padding-left: var(--space-lg);
+    padding-right: var(--space-lg);
+  }
+
+  .additional-intro {
+    color: var(--color-muted);
+  }
+
+  .additional-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
+    column-gap: var(--space-xl);
+  }
+
+  /* In the multi-column list every row gets a bottom rule so columns end evenly. */
+  .additional-list .row {
+    border-bottom: 1px solid var(--color-border);
+    margin-bottom: -1px;
   }
 </style>
 

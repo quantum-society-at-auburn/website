@@ -346,3 +346,65 @@ None.
 ## Out of Scope
 - Real name/email for VP of Treasury — ships as the same `"COMING SOON"` placeholder as the other two unfilled roles.
 - Any change to the right "Contact" column.
+
+---
+
+# Plan: QSA Website — "Additional Resources" section on the Resources page
+
+**Goal:** Put an "Additional Resources" section under the meeting-card grid on `/resources`. Its contents come from one markdown file where the user lists outside links with descriptions, with no code changes needed to add a link.
+**Constraint source:** `CLAUDE.md` reviewed ✓ (dev server via `astro dev --background`).
+**Prior plan:** New scope. Only touches the Resources page and its loader (`src/pages/resources.astro`, `src/lib/resources.ts`) plus one new data file.
+**Created:** 2026-09-22
+
+**Research done:**
+- **The link format already exists.** Each meeting's `src/content/resources/<Meeting>/info.md` holds YAML frontmatter with `links: [{ name, url, description? }]`. `src/lib/resources.ts` reads it with `parseInfoFile(path, content)`, which does the YAML parsing, the `name`/`url` checks, and warns about and skips bad entries. The new file will use the same frontmatter format and the same parser. That way the user writes links the same way in both places, and no new schema or collection is needed.
+- **The file must not go under `src/content/resources/`.** `import.meta.glob('/src/content/resources/**/*', { query: '?url&no-inline' })` imports every file there as an asset. A subfolder would also become its own meeting card. A top-level file would be skipped by `sectionFromPath` (it needs exactly 2 path segments), but it would still be copied into the build as a stray asset. `src/data/` already holds hand-edited site data (`contact-links.ts`), so the new file goes there.
+- **The page already has styles for link lists.** `src/pages/resources.astro` renders each meeting card's links as `ul.file-list > li.row > a` plus `p.link-desc`. The new section can reuse those classes as they are.
+- **The new section has to break out to full width.** `.resource-grid` escapes `main`'s 960px max-width with `margin-left/right: calc(50% - 50vw)` and `padding: 0 var(--space-lg)`. To line up with the grid's left edge, the new section needs the same breakout.
+- **Decap CMS** (`public/admin/config.yml`) has no resources collection, and the CMS setup is paused, so it isn't touched here.
+
+---
+
+## Step 1: Create the additional-resources markdown file [DONE]
+**What:** Create `src/data/additional-resources.md` with YAML frontmatter:
+- a `links:` list of `{ name, url, description }` entries
+- a comment block at the top explaining the format (the same one used by the meeting `info.md` files)
+- three starter links: IBM Quantum Learning (`https://quantum.cloud.ibm.com/learning`), Qiskit documentation (`https://quantum.cloud.ibm.com/docs`) and Quirk (`https://algassert.com/quirk`)
+**Files:** `src/data/additional-resources.md` (new)
+**Verify:** The file parses as YAML in Step 2's build without any `[resources]` warnings.
+
+## Step 2: Add a loader for it [DONE] in `src/lib/resources.ts`
+**What:** Import the file with `import additionalRaw from '/src/data/additional-resources.md?raw'`. Export `getAdditionalResources(): ResourceLink[]`, which returns `parseInfoFile('src/data/additional-resources.md', additionalRaw).links`.
+**Why:** This reuses the existing parser and its checks. `?raw` keeps the file out of the build output.
+**Files:** `src/lib/resources.ts`
+**Verify:** `npm run build` succeeds.
+
+## Step 3: Render the section below the grid [DONE]
+**What:** In `src/pages/resources.astro`:
+- Call `getAdditionalResources()`.
+- After `.resource-grid`, render `<section class="additional-resources">` only when there are links. It contains `<h2>Additional Resources</h2>`, a one-line muted intro ("Other places to learn quantum computing"), and a `ul.file-list` of `li.row` items. Each item has an external `<a target="_blank" rel="noopener noreferrer">` and an optional `p.link-desc`, the same markup the cards use.
+- Style `.additional-resources`:
+  - the same full-width breakout margins and padding as `.resource-grid`
+  - `margin-top: calc(var(--space-xl) * 2)` (there is no `--space-2xl` token)
+  - a list split into columns with `grid-template-columns: repeat(auto-fit, minmax(320px, 1fr))`, so it doesn't turn into one very long column on wide screens
+**Files:** `src/pages/resources.astro`
+**Verify:**
+- Dev-server screenshots at desktop and phone widths show the section under the grid, left-aligned with the cards, with links that open in a new tab and descriptions in the muted style.
+- There's no horizontal overflow (`scrollWidth === clientWidth`).
+- Opening and closing the meeting cards still works.
+
+## Step 4: Build, commit, push [DONE], check the live site
+**What:** Stop the dev server, run `npm run build`, commit, push to `main`, and watch `deploy.yml`. Then `curl` `/website/resources/` and check that the "Additional Resources" heading is in the HTML.
+**Verify:** The deploy passes and the live page includes the section.
+
+---
+
+## Open Questions
+None. The three starter links were kept (the user said to proceed without changing them).
+
+**Status:** Build succeeded; the only build warnings were ones already there before this change (font paths, empty slides/notes/notebooks folders). Dev-server check: on desktop the section sits under the grid, lines up with the cards, and shows 3 columns. At 390px it's one column with no horizontal overflow. All 3 links have `target=_blank`. Meeting cards still open.
+
+## Out of Scope
+- Categories or subheadings inside Additional Resources (a flat list for now; a `category` field could be added later).
+- Decap CMS editing for this file.
+- Any change to the meeting cards or their `info.md` format.
