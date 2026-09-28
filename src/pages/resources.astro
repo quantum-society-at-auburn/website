@@ -23,7 +23,7 @@ const dateFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'n
       return (
         <details class="resource-card">
           <summary>
-            <h2>{section.title}</h2>
+            <h2 title={section.title}>{section.title}</h2>
             {section.date && <p class="card-date">{dateFormatter.format(section.date)}</p>}
             {section.description && <p class="card-description">{section.description}</p>}
           </summary>
