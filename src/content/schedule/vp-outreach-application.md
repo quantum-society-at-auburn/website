@@ -1,6 +1,6 @@
 ---
 eventName: "Application for VP of Outreach"
-date: "Ongoing"
+date: "Rolling Application"
 time: "Anytime"
 location: "Online"
 description: "Apply to be the Vice President of Outreach for QSA"
