@@ -44,6 +44,8 @@ const schedule = defineCollection({
     location: z.string(),
     description: z.string().optional(),
     rsvpFormSlug: z.string().optional(),
+    /** Set to true to hide the event from the site without deleting it. */
+    archived: z.boolean().default(false),
   }),
 });
 

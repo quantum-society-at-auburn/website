@@ -8,7 +8,7 @@ import { AU_INVOLVE_URL, INSTAGRAM_URL, LINKEDIN_URL } from '../data/contact-lin
 
 const base = import.meta.env.BASE_URL;
 
-const schedule = await getCollection('schedule');
+const schedule = await getCollection('schedule', ({ data }) => !data.archived);
 
 const upcoming = schedule
   .filter((event) => event.data.date instanceof Date && event.data.date.valueOf() >= Date.now())

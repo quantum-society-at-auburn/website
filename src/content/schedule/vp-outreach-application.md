@@ -5,4 +5,5 @@ time: "Anytime"
 location: "Online"
 description: "Apply to be the Vice President of Outreach for QSA"
 rsvpFormSlug: "outreachvp_app"
+archived: false
 ---

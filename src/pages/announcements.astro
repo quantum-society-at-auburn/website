@@ -14,7 +14,7 @@ function formatDate(date: Date | string) {
   return date instanceof Date ? dateFormatter.format(date) : date;
 }
 
-const events = (await getCollection('schedule'))
+const events = (await getCollection('schedule', ({ data }) => !data.archived))
   .sort((a, b) => sortTime(a.data.date) - sortTime(b.data.date))
   .reverse();
 ---
