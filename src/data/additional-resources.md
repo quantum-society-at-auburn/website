@@ -22,7 +22,14 @@ links:
   - name: "Mathematics of Quantum Mechanics"
     url: "https://www.youtube.com/playlist?list=PL8ER5-vAoiHAWm1UcZsiauUGPlJChgNXC"
     description: "A youtube series going from the basics of linear algebra to observables, unitary operators, and the Schrodinger equation. I watched this series when I first started learning and think it builds an excellent intuition behind some tough topics"
+  - name: "Pennylane Demo Guides"
+    url: "https://pennylane.ai/search?categories=getting+started&sort=publication_date&contentType=DEMO"
+    description: ""
   # - name: ""
   #   url: ""
   #   description: ""
+  # - name: ""
+  #   url: ""
+  #   description: ""
+  
 ---
